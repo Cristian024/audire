@@ -1,0 +1,143 @@
+body{
+    background-color: rgb(11, 11, 11);
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-container{
+    display: grid;
+    grid-template-columns: 50% 50%;
+    background-color: rgb(11, 11, 11);
+    box-shadow: black 0px 10px 100px;
+    width: 60vw;
+    min-height: 80vh;
+    overflow: hidden;
+}
+
+.form-container .image-form{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;   
+    color: white;
+    font-size: 2rem;
+}
+
+.form-container .image-form h1{
+    z-index: 10;
+    margin: 20px;
+    line-height: 4rem;
+}
+
+.form-container .image-form img{
+    width: 10rem;
+    position: absolute;
+    z-index: 10;
+    top: 20px;
+    left: 20px;
+}
+
+#canvas-gradient{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    --gradient-color-1: #0d0d0d;
+    --gradient-color-2: #1b1b60;
+    --gradient-color-3: #3a164b;
+    --gradient-color-4: #121212;
+}
+
+.form-container .form_subcontainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-container .form_subcontainer .form_login{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    color: white;
+    padding: 30px;
+}
+
+.form-container .form_subcontainer .form_login .phrase_l{
+    color: rgb(169, 169, 169);
+    width: 100%;
+    margin-top: 10px;
+}
+
+.form-container .form_subcontainer .form_login form .f_password{
+    color: rgb(90, 0, 150);
+    cursor: pointer;
+    width: 100%;
+    text-align: end;
+    margin-top: 10px;
+}
+
+.form-container .form_subcontainer .form_login form .user_new_btn{
+    color: rgb(169, 169, 169);
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.form-container .form_subcontainer .form_login form .user_new_btn b{
+    color: rgb(90, 0, 150);
+}
+
+.form-container .form_subcontainer h2{
+    font-size: 2rem;
+    width: 100%;
+}
+
+.form-container .form_subcontainer form{
+    display: flex;
+    flex-direction: column;
+    margin-top: 30px;
+    width: 100%;
+}
+
+.form-container .form_subcontainer form label{
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    color: rgb(169, 169, 169);
+    margin-top: 20px;
+}
+
+.form-container .form_subcontainer form label input[type="text"],
+.form-container .form_subcontainer form label input[type="password"]{    
+    width: 100%;
+    height: 2.8rem;
+    border-radius: 5px;
+    margin-top: 5px;
+    outline: none;
+    background-color: transparent;
+    border: white solid 0.1em;
+    color: white;
+    padding: 0 0.5em;
+}
+
+.form-container .form_subcontainer form .login_btn{
+    cursor: pointer;
+    width: 100%;
+    background-color: rgb(90, 0, 150);
+    border: none;
+    outline: none;
+    margin-top: 40px;
+    height: 3rem;
+    color: white;
+    font-size: 1rem;
+    transition: 0.5s ease-in-out;
+}
+
+.form-container .form_subcontainer form .login_btn:hover{
+    box-shadow: rgb(90, 0, 150) 0px 0px 20px;
+}
