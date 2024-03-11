@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibras</title>
+    <title>Unitec</title>
     <%- include('./partials/head.html') %>
     <link rel="stylesheet" href="css/index.css">
 </head>
@@ -12,6 +12,102 @@
     <%- include('./partials/loader.html') %>
 
     <%- include('./partials/nav.html')  %>
+
+    <section style="width: 100vw; min-height: 100vh; overflow: hidden; position: relative;" class="canvas-container">
+        <div class="background-fixed">
+          <span class="bebas unitec">UNITEC</span>
+        </div>
+        <div class="canvas-principal"></div>
+        <canvas id="canvas-gradient" data-transition-in data-v-79abd109></canvas>
+        <div class="description">
+          <h1 class="satoshi phrase">Encuentra el sonido que mereces</h1>
+          <button class="satoshi button_more">Ver mas</button>
+          <div class="price">
+            <h3 class="satoshi">$350.000</h3>
+            <div class="buttons_color">
+              <span class="color_black"></span>
+              <span class="color_white"></span>
+            </div>
+          </div>
+        </div>
+      </section>
+    
+      <section class="about">
+        <h2 class="satoshi phrase_about">La perfección sonora es más que un estándar.</h2>
+        <p class="satoshi light info_about">Somos una empresa encargada de la comercialización de audifonos de la mayor calidad existente en el mercado.</p>
+        <div class="btn-about">
+          <p class="satoshi">Acerca de nosotros</p>
+          <div class="arrow">
+            <span class="arrow-bar"></span>
+            <svg class="arrow-head" fill="#ffffff" height="25px" width="25px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 330 330" xml:space="preserve">
+              <path id="XMLID_222_" d="M250.606,154.389l-150-149.996c-5.857-5.858-15.355-5.858-21.213,0.001
+               c-5.857,5.858-5.857,15.355,0.001,21.213l139.393,139.39L79.393,304.394c-5.857,5.858-5.857,15.355,0.001,21.213
+               C82.322,328.536,86.161,330,90,330s7.678-1.464,10.607-4.394l149.999-150.004c2.814-2.813,4.394-6.628,4.394-10.606
+               C255,161.018,253.42,157.202,250.606,154.389z" />
+            </svg>
+            </span>
+          </div>
+        </div>
+      </section>
+    
+      <section class="products">
+        <div class="products-description">
+          <h2 class="satoshi">Productos</h2>
+          <p class="satoshi light">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Reprehenderit consequuntur et quis quae alias quam maiores eligendi similique optio dignissimos hic, ut dolor enim sapiente ipsam tenetur perferendis iste reiciendis.</p>
+        </div>
+        <div class="products-container">
+          <div class="splide">
+            <div class="splide__track">
+              <ul class="splide__list">
+                <li class="splide__slide">
+                  <div class="splide_item">
+                    <div class="image">
+                      <img src="./images/1.jpg" alt="">
+                    </div>
+                    <p class="satoshi light">Precio - $350.000</p>
+                    <h2 class="satoshi">Audifonos Unitec</h2>
+                  </div>
+                </li>
+                <li class="splide__slide">
+                  <div class="splide_item">
+                    <div class="image">
+                      <img src="./images/3 (1).jpg" alt="">
+                    </div>
+                    <p class="satoshi light">Precio - $350.000</p>
+                    <h2 class="satoshi">Audifonos Unitec</h2>
+                  </div>
+                </li>
+                <li class="splide__slide">
+                  <div class="splide_item">
+                    <div class="image">
+                      <img src="./images/2.jpg" alt="">
+                    </div>
+                    <p class="satoshi light">Precio - $350.000</p>
+                    <h2 class="satoshi">Audifonos Unitec</h2>
+                  </div>
+                </li>
+                <li class="splide__slide">
+                  <div class="splide_item">
+                    <div class="image">
+                      <img src="./images/4 (1).jpg" alt="">
+                    </div>
+                    <p class="satoshi light">Precio - $350.000</p>
+                    <h2 class="satoshi">Audifonos Unitec</h2>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    
+      <section class="product-details">
+        <h2 class="satoshi">Audifonos unitec</h2>
+        <p class="satoshi light">Lorem ipsum dolor sit amet consectetur adipisicing elit. Vero non nemo necessitatibus ea earum quia sed fugit ipsum praesentium tempora, facere officiis dicta libero. Dignissimos cum voluptatibus temporibus soluta totam pariatur sint. Voluptate similique eos nemo sit, totam asperiores, ab, quod ex dignissimos maxime placeat quaerat sint temporibus fugiat corporis?</p>
+        <div class="product-detail">
+          <div class="canvas-product"></div>
+        </div>
+      </section>
 
     <%- include('./partials/footer.html') %>
 </body>

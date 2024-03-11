@@ -3,23 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Login</title>
     <%- include('./partials/head.html') %>
     <link rel="stylesheet" href="css/login.css">
 </head>
 <body class="<%= pagina %>">
     <%- include('./partials/loader.html') %>
 
+    <%- include('./partials/nav.html') %>
+
     <div class="form-container">
         <div class="image-form">
-            <img src="images/logo.png">
-            <h1 class="satoshi bold">Bienvenido otra vez!</h1>
+            <span class="logo bebas">Unitec</span>
+            <h1 class="satoshi bold">Bienvenido de nuevo</h1>
             <canvas id="canvas-gradient" data-transition-in data-v-79abd109></canvas>
         </div>
         <div class="form_subcontainer satoshi">
             <div class="form_login">
                 <h2 class="bold">Login</h2>
-                <p class="phrase_l">Listo para cantar una vez más? </p>
+                <p class="phrase_l">Explora nuestra exclusiva colección de productos donde la calidad se fusiona con la innovación.</p>
                 <form>
                     <label for="name_input_l">
                         Usuario

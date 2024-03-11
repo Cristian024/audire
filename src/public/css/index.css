@@ -1,3 +1,284 @@
-body{
-    background-color: rgb(11, 11, 11);
+.description {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    align-items: start;
+    z-index: 3;
+}
+
+.description h1{
+    position: absolute;
+    color: white;
+    font-size: 4em;
+    width: 35%;
+    text-align: left;
+    left: 100px;
+    bottom: 20px;
+    line-height: 0.8em;
+    font-size: 5em;
+    opacity: 0;
+}
+
+.description button{
+    position: absolute;
+    left: 100px;
+    width: 200px;
+    height: 50px;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    opacity: 0;
+}
+
+.description .price{
+    position: absolute;
+    color: white;
+    right: 100px;
+    bottom: 120px;
+    display: flex;
+    flex-direction: column;
+    width: auto;
+}
+
+.description .price .buttons_color{
+    margin-top: 10px;
+    display: flex;
+    justify-content: right;
+    width: auto;
+}
+
+.buttons_color span{
+    width: 15px;
+    height: 15px;
+    border-radius: 100%;
+    cursor: pointer;
+    margin: 0 10px;
+}
+
+.buttons_color .color_black{
+    background-color: rgb(14, 14, 14);
+}
+
+.buttons_color .color_white{
+    background-color: rgb(255, 255, 255);
+}
+
+.description button:hover{
+    background-color: black;
+    color: white;
+}
+
+.canvas-principal {
+    position: absolute;
+    top: 0;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    filter: grayscale(1) brightness(3);
+}
+
+.background-fixed{
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(120deg, #101010 30%, #212121 90%);;
+}
+
+.background-fixed span{
+    margin-left: 2vw;
+    font-size: 30vw;
+    transform: scaleY(1.3) scaleX(1.2);
+    color: rgb(32, 32, 32);
+    position: relative;
+}
+
+.background-fixed span div{
+    opacity: 0;
+}
+
+#canvas-gradient {
+    width: 100%;
+    height: 200vh;
+    top: 0;
+    color: #1c4686;
+    position: absolute;
+    --gradient-color-1: #131313;
+    --gradient-color-2: #151515;
+    --gradient-color-3: #000000;
+    --gradient-color-4: #141414;
+}
+
+.about{
+    width: 100vw;
+    min-height: 100vh;
+    background-color: black;
+    color: white;
+    padding: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+    text-align: left;
+}
+
+.phrase_about{
+    font-size: 2rem;
+    font-size: 7rem;
+    line-height: 6rem;
+    text-align: left;
+    margin-bottom: 60px;
+}
+
+.about .info_about{
+    width: 60%;
+    font-size: 2rem;
+}
+
+.about .btn-about{
+    margin-top: 25px;
+    display: flex;
+    cursor: pointer;
+    justify-content: space-between;
+    align-items: center;
+    height: 4em;
+    width: 100%;
+    position: relative;
+}
+
+.about .btn-about .arrow{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.about .btn-about .arrow-bar{
+    height: 2px;
+    width: 40vw;
+    background-color: white;
+    margin-right: 7px;
+    transition: 0.4s ease-in-out;
+}
+
+.about .btn-about:hover .arrow-bar{
+    width: 45vw;
+}
+
+.about .btn-about .arrow-head{
+    position: absolute;
+    right: 0;
+}
+
+.products{
+    width: 100vw;
+    min-height: 100vh;
+    background: linear-gradient(black, rgb(21, 21, 21));
+    padding: 50px 100px;
+    color: white;
+}
+
+.products .products-description{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+}
+
+.products .products-description h2{
+    font-size: 3em;
+    width: 30%;
+}
+
+.products .products-description p{
+    width: 60%;
+    font-size: 1.5em;
+}
+
+.products .products-container{
+    margin-top: 150px;
+    width: 100%;
+    min-height: 50vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.products .products-container .splide{
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+}
+
+.splide .splide_item{
+    width: 95%;
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.splide_item .image{
+    width: 100%;
+    height: 70vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.splide_item p{
+    width: 100%;
+    margin-top: 30px;
+    font-size: 1.5em;
+}
+
+.splide_item h2{
+    width: 100%;
+    margin-top: 10px;
+    font-size: 2.5em;
+}
+
+.splide_item .image img{
+    height: 100%;
+    width: auto;
+}
+
+.product-details{
+    width: 100vw;
+    min-height: 150vh;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(21, 21, 21);
+    padding: 100px 0;
+}
+
+.product-details h2{
+    font-size: 3em;
+}
+
+.product-details p{
+    margin: 0 20vw;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.product-details .product-detail{
+    width: 100%;
+    min-height: 100vh;
+    margin-top: 100px;
+    background: radial-gradient(rgb(37, 37, 37) , rgb(21, 21, 21) 60%) center 100%;
+}
+
+.product-details .canvas-product{
+    filter: grayscale(1);
 }

@@ -9,4 +9,8 @@ router.get('/login', (req, res) => {
     res.render('login.html', { pagina: 'LOGIN' })
 })
 
+router.get('/products', (req, res) =>{
+    res.render('products.html', { pagina: 'PRODUCTS' })
+})
+
 module.exports = router

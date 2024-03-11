@@ -1,16 +1,29 @@
-*{
+* {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
+    border-collapse: inherit;
+    text-rendering: optimizeLegibility;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body{
+    overflow-x: hidden;
+    background-color: rgb(18, 18, 18);
 }
 
 .loader{
+    top: 0;
+    position: fixed;
     z-index: 100;
     transition: 1s ease-in-out;
     opacity: 0;
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: black;
 }
 
 .loader.active{
@@ -19,7 +32,7 @@
 
 .spinner {
     --gap: 5px;
-    --clr: #50119e;
+    --clr: #ffffff;
     --height: 23px;
     width: 100px;
     height: 100px;
@@ -60,10 +73,42 @@
     }
 }
 
-.satoshi{
+/* LENIS */
+
+html.lenis {
+    height: auto;
+}
+
+.lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+    overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+    pointer-events: none;
+}
+
+/* FUENTES */
+
+.satoshi {
     font-family: 'Satoshi', sans-serif;
+}
+
+.satoshi.light{
+    font-weight: 100;
 }
 
 .satoshi.bold{
     font-weight: 900;
+}
+
+.bebas {
+    font-family: 'Bebas Neue', sans-serif;
 }
