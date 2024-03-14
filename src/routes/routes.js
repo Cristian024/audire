@@ -9,8 +9,12 @@ router.get('/login', (req, res) => {
     res.render('login.html', { pagina: 'LOGIN' })
 })
 
-router.get('/products', (req, res) =>{
+router.get('/products', (req, res) => {
     res.render('products.html', { pagina: 'PRODUCTS' })
+})
+
+router.get('/dashboard', (req, res) => {
+    res.render('dashboard.html', { pagina: 'DASHBOARD' })
 })
 
 module.exports = router

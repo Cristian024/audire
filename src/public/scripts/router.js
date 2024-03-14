@@ -1,6 +1,7 @@
 import * as INDEX from './index.js'
 import * as LOGIN from './login.js'
 import * as PRODUCTS from './products.js'
+import * as DASHBOARD from './dashboard.js'
 
 var NAME_SPACE
 
@@ -23,7 +24,9 @@ window.addEventListener('DOMContentLoaded', () => {
             case "PRODUCTS":
                 PRODUCTS.init()
                 break;
-                ;
+            case "DASHBOARD":
+                DASHBOARD.init()
+                break;
             default:
                 window.location = '../'
                 break;
@@ -34,7 +37,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }, 500);
     }
 
-    logo.addEventListener('click', () =>{
+    logo?.addEventListener('click', () =>{
         window.location = '../'
     })
 })
