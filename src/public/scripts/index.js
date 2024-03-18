@@ -1,5 +1,6 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.121.1/build/three.module.js";
 import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/loaders/GLTFLoader.js";
+import * as CARDS from "./cards.js"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -13,16 +14,18 @@ var camera_product;
 var scene_product;
 var renderer_product;
 
+var cards;
+
 var button_login;
 
-const ROUTE_HEADPHONES = './Models3D/headphones/audifonosV3.gltf'
+const ROUTE_HEADPHONES = './Models3D/headphones/audifonosV3.gltf';
 
 var lenis;
 
 const sizes = {
     width: window.innerWidth,
     height: window.innerHeight
-}
+};
 
 const initCanvasProduct = async() => {
     scene_product = new THREE.Scene()
@@ -226,7 +229,7 @@ export const init = () => {
     var splide = new Splide('.splide', {
         perPage: 2,
         perMove: 1,
-        arrows: false,
+        arrows: true,
         pagination: false
     })
 
@@ -235,6 +238,9 @@ export const init = () => {
     })
 
     splide.mount()
+
+    cards = document.querySelectorAll('.splide_item')
+    CARDS.redirectUrl(cards)
 
     animate()
     requestAnimationFrame(raf)
@@ -250,3 +256,5 @@ function animate() {
     renderer_product.render(scene_product, camera_product)
     requestAnimationFrame(animate)
 }
+
+  

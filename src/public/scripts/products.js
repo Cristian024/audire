@@ -1,10 +1,23 @@
+import * as CARDS from "./cards.js"
+
+var cards;
 
 var lenis;
+var PRODUCT_ID;
 
-export const init = () =>{
+export const init = () => {
     lenis = new Lenis()
 
+    PRODUCT_ID = document.querySelector('body').classList[1]
+
     document.querySelector('.order-btn').remove()
+
+    if (PRODUCT_ID != null) {
+        loadProduct(PRODUCT_ID)
+    } else {
+        cards = document.querySelectorAll('.product')
+        CARDS.redirectUrl(cards)
+    }
 
     requestAnimationFrame(raf)
 }
@@ -12,4 +25,8 @@ export const init = () =>{
 function raf(time) {
     lenis.raf(time)
     requestAnimationFrame(raf)
+}
+
+function loadProduct(id) {
+
 }

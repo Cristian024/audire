@@ -212,7 +212,6 @@
 .products .products-container .splide{
     width: 100%;
     height: 100%;
-    cursor: grab;
 }
 
 .splide .splide_item{
@@ -222,6 +221,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
 }
 
 .splide_item .image{

@@ -10,7 +10,7 @@
 }
 
 :root {
-  --blue: #2a2185;
+  --blue: #131313;
   --white: #fff;
   --gray: #f5f5f5;
   --black1: #222;
@@ -215,8 +215,8 @@ body {
   position: relative;
   width: 100%;
   padding: 20px;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
+  justify-content: space-between;
   grid-gap: 30px;
 }
 
@@ -224,6 +224,7 @@ body {
   position: relative;
   background: var(--white);
   padding: 30px;
+  width: 300px;
   border-radius: 20px;
   display: flex;
   justify-content: space-between;
@@ -271,7 +272,9 @@ body {
 
 .details .recentOrders {
   position: relative;
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
   min-height: 500px;
   background: var(--white);
   padding: 20px;
@@ -281,6 +284,7 @@ body {
 
 .details .cardHeader {
   display: flex;
+  width: 100%;
   justify-content: space-between;
   align-items: flex-start;
 }
@@ -330,7 +334,7 @@ body {
 }
 .status.delivered {
   padding: 2px 4px;
-  background: #8de02c;
+  background: #478402;
   color: var(--white);
   border-radius: 4px;
   font-size: 14px;
@@ -363,7 +367,9 @@ body {
 
 .recentCustomers {
   position: relative;
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
   min-height: 500px;
   padding: 20px;
   background: var(--white);

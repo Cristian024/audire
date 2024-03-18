@@ -53,3 +53,58 @@
     justify-content: space-between;
     align-items: center;
 }
+
+/* =================PRODUCTO================= */
+
+.product-container{
+    display: flex;
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+}
+
+.product-container .product-image{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 45vw;
+    overflow: hidden;
+}
+
+.product-container .product-image img{
+    height: 100%;
+    width: auto;
+}
+
+.product-container .product-description{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    width: 50vw;
+}
+
+#product-name{
+    font-size: 5em;
+}
+
+#product-description{
+    font-size: 1.5em;
+    margin-top: 30px;
+    margin-right: 20vw;
+}
+
+#product-addcard{
+    font-size: 1em;
+    margin-top: 50px;
+    width: 15vw;
+    height: 50px;
+    outline: none;
+    border: none;
+    background-color: white;
+    cursor: pointer;
+}
