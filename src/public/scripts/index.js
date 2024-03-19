@@ -1,6 +1,6 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.121.1/build/three.module.js";
 import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/loaders/GLTFLoader.js";
-import * as CARDS from "../scripts/cards"
+import * as CARDS from "./cards.js"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -217,7 +217,7 @@ const initCanvasPrincipal = () => {
     }
 }
 
-export const init = () => {
+export default () => {
     lenis = new Lenis()
     canvas_principal = document.querySelector('.canvas-principal')
     canvas_product = document.querySelector('.canvas-product')

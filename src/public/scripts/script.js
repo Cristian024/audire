@@ -1,7 +1,7 @@
-import * as INDEX from '../scripts/index.js'
-import * as LOGIN from '../scripts/login.js'
-import * as PRODUCTS from '../scripts/products.js'
-import * as DASHBOARD from '../scripts/dashboard.js'
+import * as INDEX from './index.js'
+import * as LOGIN from './login.js'
+import * as PRODUCTS from './products.js'
+import * as DASHBOARD from './dashboard.js'
 
 var NAME_SPACE
 
@@ -13,19 +13,19 @@ window.addEventListener('DOMContentLoaded', () => {
     loader = document.querySelector('.loader')
     logo = document.querySelector('.logo-header')
 
-    window.onload = () =>{
-        switch(NAME_SPACE){
+    window.onload = () => {
+        switch (NAME_SPACE) {
             case "INDEX":
-                INDEX.init()
+                INDEX.default()
                 break;
             case "LOGIN":
-                LOGIN.init()
+                LOGIN.default()
                 break;
             case "PRODUCTS":
-                PRODUCTS.init()
+                PRODUCTS.default()
                 break;
             case "DASHBOARD":
-                DASHBOARD.init()
+                DASHBOARD.default()
                 break;
             default:
                 window.location = '../'
@@ -37,19 +37,15 @@ window.addEventListener('DOMContentLoaded', () => {
         }, 500);
     }
 
-    logo?.addEventListener('click', () =>{
+    logo?.addEventListener('click', () => {
         window.location = '../'
     })
 })
 
 
-const loadPage = () =>{
+const loadPage = () => {
     loader.classList.remove('active')
     setTimeout(() => {
         loader.style.display = "none"
     }, 1000);
 }
-
-
-
-

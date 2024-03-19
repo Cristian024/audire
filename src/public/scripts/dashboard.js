@@ -3,7 +3,7 @@ var toggle;
 var navigation;
 var main; 
 
-export const init = () => {
+export default () => {
     // add hovered class to selected list item
     list = document.querySelectorAll(".navigation li");
 

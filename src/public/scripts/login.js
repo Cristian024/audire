@@ -2,7 +2,7 @@ import { Gradient } from './Gradient.js'
 
 var button_login;
 
-export const init = () => {
+export default () => {
     document.querySelector('.order-btn').remove()
     button_login = document.querySelector('.login_btn')
 

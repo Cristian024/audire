@@ -5,7 +5,7 @@ var cards;
 var lenis;
 var PRODUCT_ID;
 
-export const init = () => {
+export default () => {
     lenis = new Lenis()
 
     PRODUCT_ID = document.querySelector('body').classList[1]
