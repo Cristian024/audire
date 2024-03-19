@@ -2,59 +2,6 @@
 <script src="https://unpkg.com/@studio-freight/lenis@1.0.39/dist/lenis.min.js" type="module" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
 <script src="//unpkg.com/split-type" defer></script>
-<script type="module" defer>
-  import * as INDEX from '../scripts/index.js'
-  import * as LOGIN from '../scripts/login.js'
-  import * as PRODUCTS from '../scripts/products.js'
-  import * as DASHBOARD from '../scripts/dashboard.js'
-
-  var NAME_SPACE
-
-  var loader
-  var logo
-
-  window.addEventListener('DOMContentLoaded', () => {
-    NAME_SPACE = document.querySelector('body').classList[0]
-    loader = document.querySelector('.loader')
-    logo = document.querySelector('.logo-header')
-
-    window.onload = () => {
-      switch (NAME_SPACE) {
-        case "INDEX":
-          INDEX.init()
-          break;
-        case "LOGIN":
-          LOGIN.init()
-          break;
-        case "PRODUCTS":
-          PRODUCTS.init()
-          break;
-        case "DASHBOARD":
-          DASHBOARD.init()
-          break;
-        default:
-          window.location = '../'
-          break;
-      }
-
-      setTimeout(() => {
-        loadPage()
-      }, 500);
-    }
-
-    logo?.addEventListener('click', () => {
-      window.location = '../'
-    })
-  })
-
-
-  const loadPage = () => {
-    loader.classList.remove('active')
-    setTimeout(() => {
-      loader.style.display = "none"
-    }, 1000);
-  }
-</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
 <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
