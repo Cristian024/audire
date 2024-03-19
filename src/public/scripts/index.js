@@ -18,7 +18,7 @@ var cards;
 
 var button_login;
 
-const ROUTE_HEADPHONES = './Models3D/headphones/audifonosV3.gltf';
+const ROUTE_HEADPHONES = '../models3D/headphones/audifonosV3.gltf';
 
 var lenis;
 
