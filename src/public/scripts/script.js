@@ -1,7 +1,7 @@
-import * as INDEX from './index.js'
-import * as LOGIN from './login.js'
-import * as PRODUCTS from './products.js'
-import * as DASHBOARD from './dashboard.js'
+import * as INDEX from '../scripts/index.js'
+import * as LOGIN from '../scripts/login.js'
+import * as PRODUCTS from '../scripts/products.js'
+import * as DASHBOARD from '../scripts/dashboard.js'
 
 var NAME_SPACE
 
