@@ -5,6 +5,8 @@ var cards;
 var lenis;
 var PRODUCT_ID;
 
+var productAddcard;
+
 export default () => {
     lenis = new Lenis()
 
@@ -28,5 +30,13 @@ function raf(time) {
 }
 
 function loadProduct(id) {
+    productAddcard = document.querySelector('#product-addcard')
 
+    productAddcard.addEventListener('click', () =>{
+        addToCart(id)
+    })
+}
+
+const addToCart = (id) =>{
+    window.location = '../carlist'
 }

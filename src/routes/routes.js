@@ -15,12 +15,16 @@ router.get('/products', (req, res) => {
 
 router.get('/products/:id', (req, res) => {
     const id = req.params.id
-    
+
     res.render('product.html', { pagina: 'PRODUCTS', product: id })
 })
 
 router.get('/dashboard', (req, res) => {
     res.render('dashboard.html', { pagina: 'DASHBOARD' })
+})
+
+router.get('/carlist', (req, res) => {
+    res.render('carlist.html', { pagina: 'CARLIST' })
 })
 
 module.exports = router

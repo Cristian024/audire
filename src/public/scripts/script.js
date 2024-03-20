@@ -2,6 +2,7 @@ import * as INDEX from './index.js'
 import * as LOGIN from './login.js'
 import * as PRODUCTS from './products.js'
 import * as DASHBOARD from './dashboard.js'
+import * as CARLIST from './carlist.js'
 
 var NAME_SPACE
 
@@ -26,6 +27,9 @@ window.addEventListener('DOMContentLoaded', () => {
                 break;
             case "DASHBOARD":
                 DASHBOARD.default()
+                break;
+            case "CARLIST":
+                CARLIST.default()
                 break;
             default:
                 window.location = '../'
