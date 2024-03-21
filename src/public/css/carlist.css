@@ -1,11 +1,13 @@
-h1{
+h1 {
     color: white;
     margin-top: 80px;
     margin-left: 50px;
     font-size: 3em;
 }
 
-.car-container{
+/*LIST*/
+
+.list-container {
     width: 100vw;
     min-height: 50vh;
     display: flex;
@@ -13,24 +15,24 @@ h1{
     padding: 20px 50px;
 }
 
-.car-container .car-products{
+.list-container .car-products {
     width: 60%;
     display: flex;
     flex-direction: column;
 }
 
-.car-container .line{
+.list-container .line {
     height: auto;
     width: 1px;
     background-color: white;
 }
 
-.car-container .car-total{
+.list-container .car-total {
     width: 35%;
     color: white;
 }
 
-.car-container .car-product{
+.list-container .car-product {
     width: 100%;
     height: 120px;
     border-bottom: solid rgb(125, 125, 125) 0.5px;
@@ -40,59 +42,60 @@ h1{
     position: relative;
 }
 
-.car-product .delete{
+.car-product .delete {
     font-size: 2em;
     margin-right: 10px;
     cursor: pointer;
 }
 
-.car-product img{
+.car-product img {
     width: 80px;
     height: 80px;
 }
 
-.car-product .product-name{
+.car-product .product-name {
     margin-left: 20px;
     font-size: 2em;
 }
 
-.car-product .product-cuantity{
+.car-product .product-cuantity {
     position: absolute;
     right: 0;
 }
 
-.car-product .product-cuantity .product-price{
+.car-product .product-cuantity .product-price {
     font-size: 1em;
 }
 
-.car-product .product-cuantity .product-indicator{
+.car-product .product-cuantity .product-indicator {
     display: flex;
     margin-top: 10px;
     justify-content: space-between;
     align-items: center;
 }
 
-.car-product .product-cuantity .product-indicator ion-icon{
+.car-product .product-cuantity .product-indicator ion-icon {
     cursor: pointer;
     font-size: 1.5em;
 }
 
-.car-total hr{
+.car-total hr {
     margin: 20px 0;
 }
 
-.car-total .subtotal, .car-total .total{
+.car-total .subtotal,
+.car-total .total {
     display: flex;
     width: 100%;
     justify-content: space-between;
-    margin: 20px 0 ; 
+    margin: 20px 0;
 }
 
-.car-total .total{
+.car-total .total {
     font-size: 1.5em;
 }
 
-.car-total .buy{
+.car-total .buy {
     width: 100%;
     height: 60px;
     margin-top: 50px;
@@ -102,7 +105,7 @@ h1{
     font-size: 1em;
 }
 
-.car-total .exit{
+.car-total .exit {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -110,4 +113,223 @@ h1{
     width: 100%;
     height: 50px;
     cursor: pointer;
+}
+
+/*INFORMATION*/
+
+.form-description {
+    width: 100%;
+    padding: 50px;
+}
+
+.form-description h2{
+    color: white;
+    margin-bottom: 20px;
+}
+
+.form-description label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: white;
+    font-weight: 100;
+}
+
+.form-description input,
+.form-description select,
+.form-description textarea {
+    width: 100%;
+    height: 50px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-description input:focus,
+.form-description select:focus,
+.form-description textarea:focus {
+    outline: none;
+    border-color: #000;
+}
+
+.form-description br {
+    clear: both;
+}
+
+.form-description input[type=submit] {
+    margin-top: 10px;
+    padding: 5px 10px;
+    font-size: 16px;
+    border: 1px solid #000;
+    border-radius: 5px;
+    background-color: #ffffff;
+    cursor: pointer;
+}
+
+/*PAYMENT*/
+
+.form-payment {
+    width: 100%;
+    padding: 50px;
+}
+
+.form-payment h2 {
+    color: white;
+    margin-top: 20px;
+}
+
+.form-payment label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: white;
+    font-weight: 100;
+}
+
+.form-payment input,
+.form-payment select,
+.form-payment textarea {
+    width: 100%;
+    height: 50px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-payment input:focus,
+.form-payment select:focus,
+.form-payment textarea:focus {
+    outline: none;
+    border-color: #000;
+}
+
+.form-payment br {
+    clear: both;
+}
+
+.form-payment input[type=submit] {
+    margin-top: 10px;
+    padding: 5px 10px;
+    font-size: 16px;
+    border: 1px solid #000;
+    border-radius: 5px;
+    background-color: #ffffff;
+    cursor: pointer;
+}
+
+.form-payment button:hover {
+    background-color: #333;
+}
+
+
+/*TIMELINE*/
+
+.timeline {
+    margin: 50px 50px;
+    list-style-type: none;
+    display: flex;
+    padding: 0;
+    text-align: center;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.timeline li {
+    transition: all 200ms ease-in;
+}
+
+.timestamp {
+    width: 100%;
+    margin-bottom: 20px;
+    padding: 0px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-weight: 100;
+}
+
+.status {
+    padding: 0px 40px;
+    display: flex;
+    justify-content: center;
+    border-top: 4px solid white;
+    position: relative;
+    transition: all 200ms ease-in;
+    color: white;
+}
+
+.status span {
+    font-weight: 600;
+    padding-top: 20px;
+}
+
+.status span:before {
+    content: '';
+    width: 25px;
+    height: 25px;
+    background-color: rgb(18, 18, 18);
+    border-radius: 25px;
+    border: 4px solid #ffffff;
+    position: absolute;
+    top: -15px;
+    left: calc(50% - 12px);
+    transition: all 200ms ease-in;
+    cursor: pointer;
+}
+
+.status.active span::before {
+    background-color: white;
+}
+
+.status span {
+    font-weight: 100;
+}
+
+.status.active span {
+    font-weight: 500;
+}
+
+.swiper-control {
+    text-align: right;
+}
+
+.swiper-container {
+    width: 100%;
+    height: 250px;
+    margin: 50px 0;
+    overflow: hidden;
+    padding: 0 20px 30px 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.swiper-slide {
+    width: 25%;
+    text-align: center;
+    font-size: 18px;
+}
+
+.confirmation-container{
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 50vh;
+}
+
+.confirmation-container h2{
+    font-size: 5em;
+}
+
+.confirmation-container p{
+    font-size: 2em;
+}
+
+.confirmation-container button{
+    margin-top: 50px;
+    height: 50px;
+    width: 30vw;
+    background-color: white;
 }

@@ -23,8 +23,10 @@ router.get('/dashboard', (req, res) => {
     res.render('dashboard.html', { pagina: 'DASHBOARD' })
 })
 
-router.get('/carlist', (req, res) => {
-    res.render('carlist.html', { pagina: 'CARLIST' })
+router.get('/carlist/:id', (req, res) => {
+    const list = req.params.id
+
+    res.render('carlist.html', { pagina: 'CARLIST', section: list })
 })
 
 module.exports = router

@@ -9,37 +9,32 @@ var NAME_SPACE
 var loader
 var logo
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('load', () => {
     NAME_SPACE = document.querySelector('body').classList[0]
     loader = document.querySelector('.loader')
     logo = document.querySelector('.logo-header')
 
-    window.onload = () => {
-        switch (NAME_SPACE) {
-            case "INDEX":
-                INDEX.default()
-                break;
-            case "LOGIN":
-                LOGIN.default()
-                break;
-            case "PRODUCTS":
-                PRODUCTS.default()
-                break;
-            case "DASHBOARD":
-                DASHBOARD.default()
-                break;
-            case "CARLIST":
-                CARLIST.default()
-                break;
-            default:
-                window.location = '../'
-                break;
-        }
-
-        setTimeout(() => {
-            loadPage()
-        }, 500);
+    switch (NAME_SPACE) {
+        case "INDEX":
+            INDEX.default()
+            break;
+        case "LOGIN":
+            LOGIN.default()
+            break;
+        case "PRODUCTS":
+            PRODUCTS.default()
+            break;
+        case "DASHBOARD":
+            DASHBOARD.default()
+            break;
+        case "CARLIST":
+            CARLIST.default()
+            break;
+        default:
+            window.location = '../'
+            break;
     }
+
 
     logo?.addEventListener('click', () => {
         window.location = '../'
@@ -47,7 +42,7 @@ window.addEventListener('DOMContentLoaded', () => {
 })
 
 
-const loadPage = () => {
+export const loadPage = () => {
     loader.classList.remove('active')
     setTimeout(() => {
         loader.style.display = "none"

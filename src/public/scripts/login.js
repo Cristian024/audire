@@ -1,4 +1,5 @@
 import { Gradient } from './Gradient.js'
+import {loadPage} from './script.js'
 
 var button_login;
 
@@ -9,6 +10,8 @@ export default () => {
     const gradient = new Gradient()
 
     gradient.initGradient('#canvas-gradient')
+
+    loadPage()
 
     button_login.addEventListener('click', () => {
         window.location = '../products'
