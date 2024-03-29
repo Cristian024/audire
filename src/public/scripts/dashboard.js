@@ -1,3 +1,5 @@
+import {loadPage} from './script.js'
+
 var list;
 var toggle;
 var navigation;
@@ -13,6 +15,8 @@ export default () => {
         });
         this.classList.add("hovered");
     }
+
+    loadPage()
 
     list.forEach((item) => item.addEventListener("mouseover", activeLink));
 

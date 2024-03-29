@@ -1,0 +1,32 @@
+<section class="payment-container section-buy">
+    <form class="form-payment satoshi">
+        <h2>Datos de pago</h2>
+        <br><br>
+        <label for="metodo_pago">Método de pago:</label>
+        <select name="metodo_pago" id="metodo_pago" required>
+            <option value="">Seleccione un método de pago</option>
+            <option value="tarjeta_credito">Tarjeta de crédito</option>
+            <option value="paypal">PayPal</option>
+            <option value="efectivo">Efectivo</option>
+        </select>
+        <br><br><br>
+        <div id="tarjeta_credito" style="display: none;">
+            <label for="numero_tarjeta">Número de tarjeta:</label>
+            <input type="text" name="numero_tarjeta" id="numero_tarjeta">
+            <br>
+            <label for="fecha_vencimiento">Fecha de vencimiento:</label>
+            <input type="text" name="fecha_vencimiento" id="fecha_vencimiento">
+            <br>
+            <label for="cvv">CVV:</label>
+            <input type="text" name="cvv" id="cvv">
+            <br>
+        </div>
+        <div id="paypal" style="display: none;">
+            <label for="correo_paypal">Correo electrónico de PayPal:</label>
+            <input type="email" name="correo_paypal" id="correo_paypal">
+            <br>
+        </div>
+        <br>
+        <input type="submit" value="Confirmar" class="satoshi bold">
+    </form>
+</section>

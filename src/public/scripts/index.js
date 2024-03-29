@@ -1,6 +1,7 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.121.1/build/three.module.js";
 import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/loaders/GLTFLoader.js";
 import * as CARDS from "./cards.js"
+import {loadPage} from './script.js'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -132,6 +133,7 @@ const initCanvasPrincipal = () => {
             const position = gltf.scene.position
             const rotation = gltf.scene.rotation
             let tl = new TimelineLite({
+                onStart: function(){ loadPage() },
                 onComplete: function() { completeAnimation(position, rotation) }
             })
 

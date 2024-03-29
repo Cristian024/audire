@@ -1,4 +1,5 @@
 import * as CARDS from "./cards.js"
+import {loadPage} from './script.js'
 
 var cards;
 
@@ -19,6 +20,7 @@ export default () => {
     } else {
         cards = document.querySelectorAll('.product')
         CARDS.redirectUrl(cards)
+        loadPage()
     }
 
     requestAnimationFrame(raf)
@@ -32,11 +34,13 @@ function raf(time) {
 function loadProduct(id) {
     productAddcard = document.querySelector('#product-addcard')
 
+    loadPage()
+
     productAddcard.addEventListener('click', () =>{
         addToCart(id)
     })
 }
 
 const addToCart = (id) =>{
-    window.location = '../carlist'
+    window.location = '../carlist/list'
 }
