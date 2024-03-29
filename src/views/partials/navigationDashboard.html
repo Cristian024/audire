@@ -1,53 +1,67 @@
 <div class="navigation">
     <ul>
-        <li>
-            <a href="#">
+        <li style="margin-bottom: 30px;" class="menu-item">
+            <a href="../dashboard" class="menu-item-link">
                 <span class="title bebas">Unitec</span>
             </a>
         </li>
 
-        <li>
-            <a href="../dashboard">
+        <li class="menu-item">
+            <a href="../dashboard" class="menu-item-link">
                 <span class="icon">
                     <ion-icon name="home-outline"></ion-icon>
                 </span>
-                <span class="title">Dashboard</span>
+                <span class="title satoshi">Dashboard</span>
             </a>
         </li>
 
-        <li>
-            <a href="../dashboard/users">
+        <li class="menu-item">
+            <a href="../dashboard/users" class="menu-item-link">
                 <span class="icon">
                     <ion-icon name="people-outline"></ion-icon>
                 </span>
-                <span class="title">Usuarios</span>
+                <span class="title satoshi">Usuarios</span>
             </a>
         </li>
 
-        <li>
-            <a href="../dashboard/products">
+        <li class="menu-item">
+            <a href="*" class="menu-item-link">
                 <span class="icon">
                     <ion-icon name="headset-outline"></ion-icon>
                 </span>
-                <span class="title">Productos</span>
+                <span class="title satoshi">Productos</span>
+                <ion-icon name="chevron-down-outline" class="expand-submenu"></ion-icon>
+
+                <input type="checkbox" class="submenu-check">
             </a>
+
+            <div class="dropdown">
+                <ul class="sub-menu">
+                    <li class="sub-item satoshi">
+                        <a href="../dashboard/products">Lista de productos</a>
+                    </li>
+                    <li class="sub-item satoshi">
+                        <a href="../dashboard/productsImages">Imagenes</a>
+                    </li>
+                </ul>
+            </div>
         </li>
 
-        <li>
-            <a href="../dashboard/sales">
+        <li class="menu-item">
+            <a href="../dashboard/sales" class="menu-item-link">
                 <span class="icon">
                     <ion-icon name="cash-outline"></ion-icon>
                 </span>
-                <span class="title">Ventas</span>
+                <span class="title satoshi">Ventas</span>
             </a>
         </li>
 
-        <li>
-            <a href="../">
+        <li class="menu-item">
+            <a href="../" class="menu-item-link">
                 <span class="icon">
                     <ion-icon name="log-out-outline"></ion-icon>
                 </span>
-                <span class="title">Sign Out</span>
+                <span class="title satoshi">Sign Out</span>
             </a>
         </li>
     </ul>
