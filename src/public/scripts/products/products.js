@@ -1,5 +1,5 @@
 import * as CARDS from "./cards.js"
-import {loadPage} from './script.js'
+import {loadPage} from '../script.js'
 
 var cards;
 

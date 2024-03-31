@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <%- include('./partials/head.html') %>
+  <link rel="stylesheet" href="../css/dashboard.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css" />
+</head>
+
+<body class="<%= pagina %> <%= partial %> <%= subpartial %>">
+
+  <%- include('./partials/loader.html') %>
+
+  <div class="container">
+    <%- include('./partials/navigationDashboard.html') %>
+
+    <!-- ========================= Main ==================== -->
+    <div class="main">
+      <div class="topbar">
+        <div class="toggle">
+          <ion-icon name="menu-outline"></ion-icon>
+          <h1 class="title-subpartial">Productos</h1>
+        </div>
+
+        <div class="search">
+          <label>
+            <input type="text" placeholder="Search here">
+            <ion-icon name="search-outline"></ion-icon>
+          </label>
+        </div>
+
+        <div class="operations">
+          <div class="operation add">
+            <ion-icon name="add-circle-outline" id="add-entity"></ion-icon>
+          </div>
+          <div class="operation update disabled">
+            <ion-icon name="save-outline" id="save-changes"></ion-icon>
+            <ion-icon name="trash-bin-outline" id="discard-changes"></ion-icon>
+          </div>
+        </div>
+      </div>
+
+      <content class="table-dashboard">
+        <table class="tg">
+          <tr>
+            <th class="tg-cly1">
+              <div class="line"></div>
+            </th>
+            <th class="tg-cly1">
+              <div class="line"></div>
+            </th>
+            <th class="tg-cly1">
+              <div class="line"></div>
+            </th>
+            <th class="tg-cly1">
+              <div class="line"></div>
+            </th>
+            <th class="tg-cly1">
+              <div class="line"></div>
+            </th>
+            <th class="tg-cly1">
+              <div class="line"></div>
+            </th>
+            <th class="tg-cly1">
+              <div class="line"></div>
+            </th>
+            <th class="tg-cly1">
+              <div class="line"></div>
+            </th>
+          </tr>
+          <tr>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+          </tr>
+          <tr>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+          </tr>
+          <tr>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+          </tr>
+          <tr>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+            <td class="tg-cly1">
+              <div class="line"></div>
+            </td>
+          </tr>
+        </table>
+        <div class="table-search"></div>
+        <div class="content-dashboard">
+          <table class="table-entity">
+            <thead class="table-head-entity">            
+            </thead>
+            <tbody class="table-body-entity">
+            </tbody>
+          </table>
+        </div>
+        <div class="table-pagination"></div>
+      </content>
+
+      <div class="cardBox">
+        <div class="card">
+          <div>
+            <div class="numbers">0</div>
+            <div class="cardName">Visitas</div>
+          </div>
+
+          <div class="iconBx">
+            <ion-icon name="eye-outline"></ion-icon>
+          </div>
+        </div>
+
+        <div class="card">
+          <div>
+            <div class="numbers">0</div>
+            <div class="cardName">Ventas</div>
+          </div>
+
+          <div class="iconBx">
+            <ion-icon name="cart-outline"></ion-icon>
+          </div>
+        </div>
+
+        <div class="card">
+          <div>
+            <div class="numbers">$0</div>
+            <div class="cardName">Ingresos</div>
+          </div>
+
+          <div class="iconBx">
+            <ion-icon name="cash-outline"></ion-icon>
+          </div>
+        </div>
+      </div>
+
+      <div class="details">
+        <div class="recentOrders">
+          <div class="cardHeader">
+            <h2>Recent Orders</h2>
+            <a href="#" class="btn">View All</a>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <td>Nombre</td>
+                <td>Precio</td>
+                <td>Pago</td>
+                <td>Estado</td>
+              </tr>
+            </thead>
+
+            <tbody>
+              <!--
+                            <tr>
+                                <td>Star Refrigerator</td>
+                                <td>$1200</td>
+                                <td>Paid</td>
+                                <td><span class="status delivered">Delivered</span></td>
+                            </tr>
+                            -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ================= New Customers ================ -->
+        <div class="recentCustomers">
+          <div class="cardHeader">
+            <h2>Recent Customers</h2>
+          </div>
+
+          <table>
+            <!--
+                        <tr>
+                            <td width="60px">
+                                <div class="imgBx"><img src="assets/imgs/customer02.jpg" alt=""></div>
+                            </td>
+                            <td>
+                                <h4>David <br> <span>Italy</span></h4>
+                            </td>
+                        </tr>
+                        -->
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+
+
+  <!-- ======================= Cards ================== -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.js"></script>
+  <script src="https://cdn.datatables.net/2.0.3/js/dataTables.js" defer></script>
+  <%- include('./partials/footer.html') %>
+
+</body>
+
+</html>

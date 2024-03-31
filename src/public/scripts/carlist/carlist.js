@@ -1,4 +1,4 @@
-import { loadPage } from './script.js'
+import { loadPage } from '../script.js'
 
 /* LIST */
 var exit;

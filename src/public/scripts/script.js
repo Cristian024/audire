@@ -1,13 +1,13 @@
-import * as INDEX from './index.js'
-import * as LOGIN from './login.js'
-import * as PRODUCTS from './products.js'
-import * as DASHBOARD from './dashboard.js'
-import * as CARLIST from './carlist.js'
+import * as INDEX from './index/index.js'
+import * as LOGIN from './login/login.js'
+import * as PRODUCTS from './products/products.js'
+import * as DASHBOARD from './dashboard/dashboard.js'
+import * as CARLIST from './carlist/carlist.js'
 
 var NAME_SPACE
 
-var loader
-var logo
+var loader;
+var logo;
 
 window.addEventListener('load', () => {
     NAME_SPACE = document.querySelector('body').classList[0]
@@ -44,6 +44,7 @@ window.addEventListener('load', () => {
 
 export const loadPage = () => {
     loader.classList.remove('active')
+
     setTimeout(() => {
         loader.style.display = "none"
     }, 1000);

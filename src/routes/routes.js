@@ -1,4 +1,5 @@
 const express = require('express')
+const dashboard = require('./dashboard')
 const router = express.Router()
 
 router.get('/', (req, res) => {
@@ -24,5 +25,7 @@ router.get('/carlist/:id', (req, res) => {
 
     res.render('carlist.html', { pagina: 'CARLIST', section: list })
 })
+
+router.use('/dashboard', dashboard)
 
 module.exports = router

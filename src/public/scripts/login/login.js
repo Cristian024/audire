@@ -1,5 +1,5 @@
-import { Gradient } from './Gradient.js'
-import {loadPage} from './script.js'
+import { Gradient } from '../dependencies/Gradient.js'
+import {loadPage} from '../script.js'
 
 var button_login;
 
