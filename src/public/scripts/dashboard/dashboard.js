@@ -1,6 +1,7 @@
 import * as ROUTER from '../script.js';
 import * as PRODUCTS from './products.js';
 import * as HOME from './home.js';
+import * as API from '../dependencies/apiMethods.js'
 
 
 var listNavigation;
@@ -8,6 +9,7 @@ var toggle;
 var navigation;
 var table;
 var content;
+var tableContainer;
 var cardBox;
 var details;
 var section;
@@ -19,8 +21,17 @@ var tableSearch;
 var dashboardQueryInput;
 var skeletonTable;
 var operations;
+var operationInputs;
 
-export default async() => {
+var containerEntity;
+var formEntity;
+var addEntityButton;
+
+var discardChangesButton;
+
+var saveChangesButton;
+
+export default async () => {
     listNavigation = document.querySelectorAll(".navigation li");
     section = document.querySelector('body').classList[1];
     content = document.querySelector('.content-dashboard');
@@ -33,25 +44,22 @@ export default async() => {
     dashboardQueryInput = document.querySelector('.search');
     skeletonTable = document.querySelector('.tg');
     operations = document.querySelector('.operations');
-    
+    formEntity = document.querySelector('#form-entity');
+    addEntityButton = document.querySelector('#add-entity');
+    containerEntity = document.querySelector('.entity-container');
+    operationInputs = document.querySelectorAll('.operation')
+    tableContainer = document.querySelector('.table-container')
+    discardChangesButton = document.querySelector('#discard-changes')
+    saveChangesButton = document.querySelector('#save-changes')
 
     ROUTER.loadPage();
 
     routePartials();
 
-    functionSideBar();
+    functionsDashboard();
 }
 
-const functionSideBar = () =>{
-    function activeLink() {
-        listNavigation.forEach((item) => {
-            item.classList.remove("hovered");
-        });
-        this.classList.add("hovered");
-    }
-
-    listNavigation.forEach((item) => item.addEventListener("mouseover", activeLink));
-
+const functionsDashboard = () => {
     toggle = document.querySelector(".toggle");
     navigation = document.querySelector(".navigation");
     main = document.querySelector(".main");
@@ -60,17 +68,44 @@ const functionSideBar = () =>{
         navigation.classList.toggle("active");
         main.classList.toggle("active");
     };
+
+    addEntityButton.addEventListener('click', (e) => {
+        updateVist();
+        formEntity.setAttribute('method', 'POST')
+    })
+
+    discardChangesButton.addEventListener('click', () => {
+        updateVist();
+        formEntity.removeAttribute('method')
+        formEntity.removeAttribute('id-entity')
+    })
+
+    saveChangesButton.addEventListener('click', (e) => {
+        document.querySelector('#form-entity-submit').click()
+    })
+
+    formEntity.addEventListener('submit', (e)=>{
+        e.preventDefault()
+        executeAction(e)
+    })
 }
 
-const routePartials = () =>{
-    if(section == 'HOME'){
+export const updateVist = () => {
+    containerEntity.classList.toggle('enabled');
+    tableContainer.classList.toggle('disabled');
+    operationInputs[0].classList.toggle('disabled');
+    operationInputs[1].classList.toggle('disabled');
+}
+
+const routePartials = () => {
+    if (section == 'HOME') {
         table.remove();
         operations.remove();
-    }else{
+    } else {
         cardBox.remove();
         details.remove();
         dashboardQueryInput.remove();
-    } 
+    }
 
     switch (section) {
         case 'HOME':
@@ -82,7 +117,7 @@ const routePartials = () =>{
     }
 }
 
-export const loadTable = async() =>{
+export const loadTable = async () => {
     await new DataTable('.table-entity', {
         responsive: true,
     });
@@ -95,7 +130,7 @@ export const loadTable = async() =>{
     tableSearch.append(tableQueryInputs[0]);
 }
 
-const removeSkeletonLoad = () =>{
+const removeSkeletonLoad = () => {
     skeletonTable.classList.add('disabled')
 
     setTimeout(() => {
@@ -112,4 +147,60 @@ export const insertHeaderTable = (header) => {
 
         tr.append(th);
     });
+}
+
+export const insertFieldsFormAdd = (fields) => {
+    var inner = ""
+    fields.forEach(fieldArray => {
+        const type = fieldArray.type;
+        const name = fieldArray.name;
+        const label = fieldArray.label;
+
+        if (type == 'textarea') {
+            inner += `<label for="${name}">
+            ${label}
+            <textarea name="${name}" required></textarea>
+            </label>`
+        } else {
+            inner += `<label for="${name}">
+            ${label}
+            <input type="${type}" name="${name}" required>
+            </label>`
+        }
+    });
+
+    inner += '<input id="form-entity-submit" name="submit" type="submit" style="display:none;">'
+
+    formEntity.innerHTML = inner
+}
+
+const executeAction = (e) =>{
+    var form= e.target;
+
+    const method = form.getAttribute('method')
+    const id = form.getAttribute('id-entity') || null
+
+    var elements = form.elements;
+
+    const data = '{'
+
+    for(var i = 0; i < elements.length; i++){
+        const name = elements[i].name;
+        const value = elements[i].value;
+        if(name !== "submit"){
+            data += `'${name}': '${value}',`
+        }
+    }
+
+    routerMethods(method, data, id);
+}
+
+export var router;
+
+const routerMethods = (method, data, id) =>{
+    switch(method){
+        case 'POST':
+            API.executeInsert(data, router)
+            break;
+    }
 }

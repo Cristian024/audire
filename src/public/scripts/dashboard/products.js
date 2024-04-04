@@ -1,10 +1,11 @@
-import { loadTable, insertHeaderTable } from './dashboard.js'
+import { loadTable, insertHeaderTable, insertFieldsFormAdd, route } from './dashboard.js'
 import * as api from '../dependencies/apiMethods.js'
 
 var data;
 var tableBody;
 var subpartial;
 var titleSubpartial;
+
 let headerTableListProducts = [
     'ID',
     'NOMBRE',
@@ -20,23 +21,45 @@ let headerTableListProducts = [
     'OPERACIÓN'
 ];
 
+let fieldsListProducts = [
+    {
+        'label': 'Nombre',
+        'type': 'text',
+        'name': 'name'
+    },
+    {
+        'label': 'Precio',
+        'type': 'number',
+        'name': 'price'
+    },
+    {
+        'label': 'Descripción',
+        'type': 'textarea',
+        'name': 'description'
+    }
+]
+
 export const init = async () => {
-    subpartial = document.querySelector('body').classList[2]
-    tableBody = document.querySelector('.table-body-entity')
-    titleSubpartial = document.querySelector('.title-subpartial')
+    subpartial = document.querySelector('body').classList[2];
+    tableBody = document.querySelector('.table-body-entity');
+    titleSubpartial = document.querySelector('.title-subpartial');
 
     switch (subpartial) {
         case 'LIST':
+            route = 'products'
             data = await api.executeConsult(null, 'products')
             initListProducts()
             break;
         case 'IMAGES':
             break;
     }
+
 }
 
-const initListProducts = async() =>{
-    titleSubpartial.textContent = `Productos/Lista de productos`
+const initListProducts = async () => {
+    titleSubpartial.textContent = `Productos / Lista de productos`
+
+    insertFieldsFormAdd(fieldsListProducts);
 
     const insertData = async () => {
 
@@ -46,7 +69,7 @@ const initListProducts = async() =>{
         }
 
         insertHeaderTable(headerTableListProducts)
-    
+
         data.forEach(element => {
             const row = document.createElement('tr')
             tableBody.append(row)
@@ -66,10 +89,13 @@ const initListProducts = async() =>{
             `
             row.innerHTML = row_content
         });
-    
+
         await loadTable();
     }
 
     await insertData();
 }
 
+export const productsMethods = async (method, data, id) =>{
+    
+}

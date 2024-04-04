@@ -541,6 +541,11 @@ body {
 
 .table-dashboard {
   position: relative;
+  display: block;
+}
+
+.table-container.disabled {
+  display: none;
 }
 
 .content-dashboard {
@@ -673,6 +678,64 @@ body {
   height: 30px;
 }
 
+.table-dashboard .entity-container{
+  position: absolute;
+  width: 100%;
+  min-height: 100vh;
+  background-color: rgb(255, 255, 255);
+  z-index: 10;
+  top: 0;
+  padding: 20px;
+  display: none;
+}
+
+.table-dashboard .entity-container.enabled{
+  display: flex;
+  animation: animation-in-form 0.5s forwards;
+}
+
+.table-dashboard .entity-container form{
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.table-dashboard .entity-container form label{
+  display: flex;
+  flex-direction: column;
+  font-size: 1rem;
+  margin-bottom: 30px;
+}
+
+.table-dashboard .entity-container form label input{
+  height: 50px;
+  margin-top: 10px;
+  padding: 5px;
+  border-radius: 5px;
+  border: solid 1px;
+}
+
+.table-dashboard .entity-container form label textarea{
+  margin-top: 10px;
+  resize: vertical;
+  height: 200px;
+  padding: 5px;
+  border-radius: 5px;
+  border: solid 1px;
+}
+
+@keyframes animation-in-form {
+  0%{
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  100%{
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 .operations{
   display: flex;
 }
@@ -691,8 +754,8 @@ body {
   background-color: black;
   color: white;
   border-radius: 10px;
-  width: 2rem;
-  height: 2rem;
+  width: 1.5rem;
+  height: 1.5rem;
   padding: 0.5rem;
   margin: 0 10px;
   cursor: pointer;
