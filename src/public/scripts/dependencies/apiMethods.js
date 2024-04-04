@@ -1,14 +1,14 @@
-var url = "http://localhost/api_crud/index.php/"
+var url = "http://localhost/unitec/index.php/"
 
 export const executeConsult = async (id, route) => {
     var data;
 
     if (id != null) url += `${id}`
 
-    url += `?route=${route}`;
+    const consultUrl = url + `?route=${route}`;
 
     try {
-        const response = await fetch(url, {
+        const response = await fetch(consultUrl, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json; charset=utf-8'
@@ -43,15 +43,16 @@ export const executeConsult = async (id, route) => {
 }
 
 export const executeInsert = async (data, route) => {
-    const data_json = JSON.parse(data)
+    const insertUrl = url + `?route=${route}`;
 
     try {
-        const response = await fetch(url, {
-            method: 'GET',
+        const data_json = JSON.parse(data);
+        const response = await fetch(insertUrl, {
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json; charset=utf-8'
             },
-            body: data_json
+            body: JSON.stringify(data_json)
         })
 
         if(!response.ok){
@@ -65,6 +66,7 @@ export const executeInsert = async (data, route) => {
 
         return data_response;
     } catch (error) {
+        console.log(error);
         return null;
     }
 }

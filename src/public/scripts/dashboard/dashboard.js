@@ -182,25 +182,36 @@ const executeAction = (e) =>{
 
     var elements = form.elements;
 
-    const data = '{'
+    var data = '{'
 
     for(var i = 0; i < elements.length; i++){
         const name = elements[i].name;
         const value = elements[i].value;
         if(name !== "submit"){
-            data += `'${name}': '${value}',`
+            data += `"${name}": "${value}",`
         }
     }
+
+    data = data.substring(0, data.length - 1);
+
+    data += "}"
 
     routerMethods(method, data, id);
 }
 
-export var router;
+var router = null;
 
-const routerMethods = (method, data, id) =>{
+export const setRouter = (route) =>{
+    router = route
+}
+
+const routerMethods = async(method, data, id) =>{
+    var response = null;
+
     switch(method){
         case 'POST':
-            API.executeInsert(data, router)
+            response = await API.executeInsert(data, router)
+            console.log(response);
             break;
     }
 }

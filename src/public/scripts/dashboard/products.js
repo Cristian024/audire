@@ -1,4 +1,4 @@
-import { loadTable, insertHeaderTable, insertFieldsFormAdd, route } from './dashboard.js'
+import { loadTable, insertHeaderTable, insertFieldsFormAdd, setRouter } from './dashboard.js'
 import * as api from '../dependencies/apiMethods.js'
 
 var data;
@@ -46,7 +46,7 @@ export const init = async () => {
 
     switch (subpartial) {
         case 'LIST':
-            route = 'products'
+            setRouter('products')
             data = await api.executeConsult(null, 'products')
             initListProducts()
             break;
