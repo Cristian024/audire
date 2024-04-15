@@ -1,5 +1,6 @@
-import { loadTable, insertHeaderTable, insertFieldsFormAdd, setRouter } from './dashboard.js'
+import {setRouter, getButtonsEntity } from './dashboard.js'
 import * as api from '../dependencies/apiMethods.js'
+import { insertHeaders, insertData, insertFields } from './dashboardTables.js';
 
 var data;
 var tableBody;
@@ -20,7 +21,6 @@ let headerTableListProducts = [
     'CALIFICACIÓN',
     'OPERACIÓN'
 ];
-
 let fieldsListProducts = [
     {
         'label': 'Nombre',
@@ -37,7 +37,30 @@ let fieldsListProducts = [
         'type': 'textarea',
         'name': 'description'
     }
-]
+];
+
+let fieldsImagesProducts = [
+    {
+        'label': 'Imagen',
+        'type': 'file',
+        'accept': 'image/*',
+        'name': 'url',
+        'route': 'products'
+    },
+    {
+        'label': 'Producto',
+        'type': 'select',
+        'options': 'products',
+        'name': 'product'
+    }
+];
+let headerTableImagesProducts = [
+    "ID",
+    "URL",
+    "ID PRODUCTO",
+    "NOMBRE DEL PRODUCTO",
+    "OPERACIÓN"
+];
 
 export const init = async () => {
     subpartial = document.querySelector('body').classList[2];
@@ -46,56 +69,55 @@ export const init = async () => {
 
     switch (subpartial) {
         case 'LIST':
-            setRouter('products')
-            data = await api.executeConsult(null, 'products')
-            initListProducts()
+            setRouter('products');
+            data = await api.executeConsult(null, 'products');
+            initListProducts();
             break;
         case 'IMAGES':
+            setRouter('products_images');
+            data = await api.executeConsult(null, 'products_images');
+            initImagesProducts();
             break;
     }
-
 }
 
-const initListProducts = async () => {
-    titleSubpartial.textContent = `Productos / Lista de productos`
+const initImagesProducts = async () => {
+    titleSubpartial.textContent = 'Productos / Imagenes';
 
-    insertFieldsFormAdd(fieldsListProducts);
+    await insertFieldsForm(fieldsImagesProducts);
 
     const insertData = async () => {
-
         if (data == null) {
             alert('error request')
             return;
         }
 
-        insertHeaderTable(headerTableListProducts)
+        insertHeaderTable(headerTableImagesProducts);
 
         data.forEach(element => {
             const row = document.createElement('tr')
             tableBody.append(row)
             const row_content = `
                 <td>${element.id}</td>
-                <td>${element.name}</td>
-                <td>${element.description}</td>
-                <td>${element.price}</td>
-                <td>${element.lots}</td>
-                <td>${element.quantityStock}</td>
-                <td>${element.quantityImages}</td>
-                <td>${element.images}</td>
-                <td>${element.imagesURL}</td>
-                <td>${element.quantityComments}</td>
-                <td>${element.rate}</td>
-                <td></td>
+                <td><a href="${element.url}" target="_blank">${element.url}</a></td>
+                <td>${element.product}</td>
+                <td>${element.productName}</td>
             `
-            row.innerHTML = row_content
+            row.innerHTML = row_content;
+
+            var buttons = document.createElement('td');
+
+            const editButton = getButtonsEntity(element.id)[0];
+            const deleteButton = getButtonsEntity(element.id)[1];
+
+            buttons.append(editButton);
+            buttons.append(deleteButton);
+
+            row.append(buttons)
         });
 
         await loadTable();
     }
 
     await insertData();
-}
-
-export const productsMethods = async (method, data, id) =>{
-    
 }

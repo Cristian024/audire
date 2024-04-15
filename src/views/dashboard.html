@@ -8,9 +8,10 @@
   <%- include('./partials/head.html') %>
   <link rel="stylesheet" href="../css/dashboard.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css" />
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
 
-<body class="<%= pagina %> <%= partial %> <%= subpartial %>">
+<body class="<%= pagina %> <%= partial %>">
 
   <%- include('./partials/loader.html') %>
 
@@ -191,9 +192,10 @@
         </div>
 
         <div class="entity-container">
-          <form id="form-entity" >
+          <form id="form-entity">
           </form>
         </div>
+
       </content>
 
       <div class="cardBox">
@@ -230,7 +232,6 @@
           </div>
         </div>
       </div>
-
       <div class="details">
         <div class="recentOrders">
           <div class="cardHeader">
@@ -285,11 +286,21 @@
 
   </div>
 
+  <div class="dialog-delete">
+    <div class="card">
+      <ion-icon name="trash-outline"></ion-icon>
+      <p class="cookieHeading">Deseas eliminar la entidad?</p>
 
-
+      <div class="buttonContainer">
+        <button class="acceptButton">Aceptar</button>
+        <button class="declineButton">Cancelar</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ======================= Cards ================== -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.js" defer></script>
   <script src="https://cdn.datatables.net/2.0.3/js/dataTables.js" defer></script>
   <%- include('./partials/footer.html') %>
 

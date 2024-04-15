@@ -1,10 +1,10 @@
 import * as ROUTER from '../script.js';
-import * as PRODUCTS from './products.js';
 import * as HOME from './home.js';
 import * as API from '../dependencies/apiMethods.js'
+import * as FIREBASE from '../dependencies/firebase.js'
+import * as TABLES from './dashboardTables.js'
 
 
-var listNavigation;
 var toggle;
 var navigation;
 var table;
@@ -14,12 +14,12 @@ var cardBox;
 var details;
 var section;
 var headTable;
+var bodyTable;
+var entityTable;
 var main;
-var tableQueryInputs;
 var tablePagination;
 var tableSearch;
 var dashboardQueryInput;
-var skeletonTable;
 var operations;
 var operationInputs;
 
@@ -31,26 +31,37 @@ var discardChangesButton;
 
 var saveChangesButton;
 
+var notification;
+
+var dialogDelete;
+var declineButton;
+var acceptButton;
+
+var subpartial;
+
 export default async () => {
-    listNavigation = document.querySelectorAll(".navigation li");
     section = document.querySelector('body').classList[1];
     content = document.querySelector('.content-dashboard');
     table = document.querySelector('.table-dashboard');
     cardBox = document.querySelector('.cardBox');
     details = document.querySelector('.details');
     headTable = document.querySelector('.table-head-entity');
+    bodyTable = document.querySelector('.table-body-entity');
+    entityTable = document.querySelector('.table-entity')
     tablePagination = document.querySelector('.table-pagination');
     tableSearch = document.querySelector('.table-search');
     dashboardQueryInput = document.querySelector('.search');
-    skeletonTable = document.querySelector('.tg');
     operations = document.querySelector('.operations');
     formEntity = document.querySelector('#form-entity');
     addEntityButton = document.querySelector('#add-entity');
     containerEntity = document.querySelector('.entity-container');
-    operationInputs = document.querySelectorAll('.operation')
-    tableContainer = document.querySelector('.table-container')
-    discardChangesButton = document.querySelector('#discard-changes')
-    saveChangesButton = document.querySelector('#save-changes')
+    operationInputs = document.querySelectorAll('.operation');
+    tableContainer = document.querySelector('.table-container');
+    discardChangesButton = document.querySelector('#discard-changes');
+    saveChangesButton = document.querySelector('#save-changes');
+    dialogDelete = document.querySelector('.dialog-delete');
+    declineButton = document.querySelector('.declineButton');
+    acceptButton = document.querySelector('.acceptButton');
 
     ROUTER.loadPage();
 
@@ -68,37 +79,12 @@ const functionsDashboard = () => {
         navigation.classList.toggle("active");
         main.classList.toggle("active");
     };
-
-    addEntityButton.addEventListener('click', (e) => {
-        updateVist();
-        formEntity.setAttribute('method', 'POST')
-    })
-
-    discardChangesButton.addEventListener('click', () => {
-        updateVist();
-        formEntity.removeAttribute('method')
-        formEntity.removeAttribute('id-entity')
-    })
-
-    saveChangesButton.addEventListener('click', (e) => {
-        document.querySelector('#form-entity-submit').click()
-    })
-
-    formEntity.addEventListener('submit', (e)=>{
-        e.preventDefault()
-        executeAction(e)
-    })
-}
-
-export const updateVist = () => {
-    containerEntity.classList.toggle('enabled');
-    tableContainer.classList.toggle('disabled');
-    operationInputs[0].classList.toggle('disabled');
-    operationInputs[1].classList.toggle('disabled');
 }
 
 const routePartials = () => {
-    if (section == 'HOME') {
+    section = section.toLowerCase();
+
+    if (section == 'home') {
         table.remove();
         operations.remove();
     } else {
@@ -107,111 +93,11 @@ const routePartials = () => {
         dashboardQueryInput.remove();
     }
 
-    switch (section) {
-        case 'HOME':
-            HOME.init();
-            break;
-        case 'PRODUCTS':
-            PRODUCTS.init();
-            break;
-    }
+    TABLES.init(section)
 }
 
-export const loadTable = async () => {
-    await new DataTable('.table-entity', {
-        responsive: true,
-    });
 
-    removeSkeletonLoad()
 
-    tableQueryInputs = document.querySelectorAll('.dt-layout-row');
 
-    tablePagination.append(tableQueryInputs[2]);
-    tableSearch.append(tableQueryInputs[0]);
-}
 
-const removeSkeletonLoad = () => {
-    skeletonTable.classList.add('disabled')
 
-    setTimeout(() => {
-        skeletonTable.style.display = "none"
-    }, 500);
-}
-
-export const insertHeaderTable = (header) => {
-    const tr = document.createElement('tr');
-    headTable.append(tr);
-    header.forEach(element => {
-        const th = document.createElement('th')
-        th.textContent = element;
-
-        tr.append(th);
-    });
-}
-
-export const insertFieldsFormAdd = (fields) => {
-    var inner = ""
-    fields.forEach(fieldArray => {
-        const type = fieldArray.type;
-        const name = fieldArray.name;
-        const label = fieldArray.label;
-
-        if (type == 'textarea') {
-            inner += `<label for="${name}">
-            ${label}
-            <textarea name="${name}" required></textarea>
-            </label>`
-        } else {
-            inner += `<label for="${name}">
-            ${label}
-            <input type="${type}" name="${name}" required>
-            </label>`
-        }
-    });
-
-    inner += '<input id="form-entity-submit" name="submit" type="submit" style="display:none;">'
-
-    formEntity.innerHTML = inner
-}
-
-const executeAction = (e) =>{
-    var form= e.target;
-
-    const method = form.getAttribute('method')
-    const id = form.getAttribute('id-entity') || null
-
-    var elements = form.elements;
-
-    var data = '{'
-
-    for(var i = 0; i < elements.length; i++){
-        const name = elements[i].name;
-        const value = elements[i].value;
-        if(name !== "submit"){
-            data += `"${name}": "${value}",`
-        }
-    }
-
-    data = data.substring(0, data.length - 1);
-
-    data += "}"
-
-    routerMethods(method, data, id);
-}
-
-var router = null;
-
-export const setRouter = (route) =>{
-    router = route
-}
-
-const routerMethods = async(method, data, id) =>{
-    var response = null;
-
-    switch(method){
-        case 'POST':
-            response = await API.executeInsert(data, router)
-            console.log(response);
-            break;
-    }
-}

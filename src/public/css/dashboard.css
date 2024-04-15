@@ -183,11 +183,12 @@ body {
   align-items: center;
 }
 
-.toggle h1{
+.toggle h1 {
   margin-left: 30px;
   font-size: 1.5rem;
 }
-.toggle ion-icon{
+
+.toggle ion-icon {
   font-size: 2.5rem;
   cursor: pointer;
 }
@@ -537,11 +538,16 @@ body {
   }
 }
 
-/*===========TABLAS===============*/
+/*==============TABLAS===============*/
 
 .table-dashboard {
   position: relative;
   display: block;
+}
+
+.table-dashboard .table-body-entity ion-icon {
+  cursor: pointer;
+  margin: 0 10px;
 }
 
 .table-container.disabled {
@@ -636,7 +642,7 @@ body {
 }
 
 .table-dashboard .table-pagination .dt-layout-row,
-.table-dashboard .table-search .dt-layout-row{
+.table-dashboard .table-search .dt-layout-row {
   width: calc(100% -60px);
   margin: 0 30px;
   display: flex;
@@ -644,14 +650,14 @@ body {
   align-items: center;
 }
 
-.table-dashboard .table-pagination .paging_full_numbers{
+.table-dashboard .table-pagination .paging_full_numbers {
   width: 20vmin;
   height: 30px;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
 }
 
-.paging_full_numbers button{
+.paging_full_numbers button {
   outline: none;
   background-color: white;
   cursor: pointer;
@@ -659,26 +665,26 @@ body {
   transition: .2s ease-out;
 }
 
-.paging_full_numbers button:hover{
+.paging_full_numbers button:hover {
   background-color: black;
   color: white;
 }
 
-.table-dashboard .table-search{
+.table-dashboard .table-search {
   margin-top: 20px;
 }
 
-.table-search .dt-search input{
+.table-search .dt-search input {
   margin-left: 20px;
   height: 30px;
 }
 
-.table-search .dt-length select{
+.table-search .dt-length select {
   margin-right: 20px;
   height: 30px;
 }
 
-.table-dashboard .entity-container{
+.table-dashboard .entity-container {
   position: absolute;
   width: 100%;
   min-height: 100vh;
@@ -689,34 +695,62 @@ body {
   display: none;
 }
 
-.table-dashboard .entity-container.enabled{
+.table-dashboard .entity-container.enabled {
   display: flex;
   animation: animation-in-form 0.5s forwards;
 }
 
-.table-dashboard .entity-container form{
+.table-dashboard .entity-container form {
   width: 100%;
   min-height: 100%;
   display: flex;
   flex-direction: column;
 }
 
-.table-dashboard .entity-container form label{
+.table-dashboard .entity-container form label {
   display: flex;
   flex-direction: column;
   font-size: 1rem;
   margin-bottom: 30px;
 }
 
-.table-dashboard .entity-container form label input{
-  height: 50px;
+.table-dashboard .entity-container form select{
+  height: 30px;
+}
+
+.table-dashboard .entity-container form label input {
   margin-top: 10px;
+}
+
+.table-dashboard .entity-container form label progress {
+  margin-top: 10px;
+  height: 30px;
+  width: 500px;
+  -webkit-appearance: none;
+}
+
+::-webkit-progress-value {
+  background-color: black;
+  border-radius: 10px;
+  -webkit-transition: width 0.5s ease;
+  -moz-transition: width 0.5s ease;
+  -o-transition: width 0.5s ease;
+  transition: width 0.5s ease;
+}
+
+::-webkit-progress-bar {
+  border-radius: 10px;
+}
+
+.table-dashboard .entity-container form label input[type="text"],
+.table-dashboard .entity-container form label input[type="number"] {
+  height: 50px;
   padding: 5px;
   border-radius: 5px;
   border: solid 1px;
 }
 
-.table-dashboard .entity-container form label textarea{
+.table-dashboard .entity-container form label textarea {
   margin-top: 10px;
   resize: vertical;
   height: 200px;
@@ -726,31 +760,32 @@ body {
 }
 
 @keyframes animation-in-form {
-  0%{
+  0% {
     transform: translateY(30px);
     opacity: 0;
   }
-  100%{
+
+  100% {
     transform: translateY(0);
     opacity: 1;
   }
 }
 
-.operations{
+.operations {
   display: flex;
 }
 
-.operations .operation{
+.operations .operation {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.operations .operation.disabled{
+.operations .operation.disabled {
   display: none;
 }
 
-.operations .operation ion-icon{
+.operations .operation ion-icon {
   background-color: black;
   color: white;
   border-radius: 10px;
@@ -759,4 +794,84 @@ body {
   padding: 0.5rem;
   margin: 0 10px;
   cursor: pointer;
+}
+
+.dialog-delete {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.445);
+}
+
+.dialog-delete.active {
+  display: flex;
+}
+
+.dialog-delete .card {
+  width: 350px;
+  height: 220px;
+  background-color: rgb(255, 255, 255);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 30px;
+  gap: 13px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 2px 2px 20px rgba(0, 0, 0, 0.062);
+}
+
+.dialog-delete ion-icon {
+  width: 60px;
+  height: 60px;
+}
+
+.dialog-delete .cookieHeading {
+  font-size: 1.2em;
+  font-weight: 800;
+  color: rgb(26, 26, 26);
+  text-align: center;
+}
+
+.dialog-delete .buttonContainer {
+  display: flex;
+  gap: 20px;
+  flex-direction: row;
+  margin-top: 20px;
+}
+
+.dialog-delete .buttonContainer button {
+  width: 100px;
+  height: 40px;
+  cursor: pointer;
+  border: none;
+  font-weight: 600;
+  border-radius: 5px;
+  transition-duration: .2s;
+}
+
+.dialog-delete .acceptButton {
+  background-color: #f35c5c;
+  color: rgb(241, 241, 241);
+}
+
+.dialog-delete .declineButton {
+  background-color: rgb(218, 218, 218);
+  color: rgb(46, 46, 46);
+}
+
+.dialog-delete .declineButton:hover {
+  background-color: #ebebeb;
+  transition-duration: .2s;
+}
+
+.dialog-delete .acceptButton:hover {
+  background-color: #ef2f2f;
+  transition-duration: .2s;
 }
