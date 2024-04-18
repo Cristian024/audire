@@ -144,15 +144,27 @@ const insertFields = async (route) => {
         const options = fieldArray.options || null;
         const route = fieldArray.route || null;
 
+        console.log('Constructor: :', {
+            'type': type,
+            'name': name,
+            'label': label,
+            'options': options
+        });
+
         if (type == 'textarea') {
             inner += `<label for="${name}">
             ${label}
             <textarea name="${name}" class="field" required></textarea>
             </label>`;
-        } else if (type == 'text' || type == 'number') {
+        } else if (type == 'text' || type == 'password' || type == 'date') {
             inner += `<label for="${name}">
             ${label}
             <input type="${type}" name="${name}" class="field" required>
+            </label>`;
+        } else if (type == 'number'){
+            inner += `<label for="${name}">
+            ${label}
+            <input type="${type}" name="${name}" class="field" step="any" required>
             </label>`;
         } else if (type == 'file') {
             inner += `<label for="${name}">
@@ -161,16 +173,21 @@ const insertFields = async (route) => {
             <progress class="progress-${name}" max="100" value="0"></progress>
             </label>`;
         } else if (type == 'select') {
+            const optionsForm = await getOptionsSelect(options);
             inner += `<label for="${name}">
             ${label}
             <select name="${name}" class="field" required>
-                ${await getOptionsSelect(options)}
+                ${optionsForm}
             </select>
             </label>`;
         }
+
+        console.log(`Termina ejecución: ${inner}`);
     }));
 
-    inner += '<input id="form-entity-submit" name="submit" type="submit" style="display:none;">'
+    inner += '<input id="form-entity-submit" name="submit" type="submit" style="display:none;">';
+
+    console.log(`Se inserta inner: ${inner}`);
 
     formEntity.innerHTML = inner
     setListenersFields();
@@ -416,6 +433,12 @@ const uploadFile = async (reference, file, input, progress) => {
 
 const getOptionsSelect = async (route) => {
     const data = await API.executeConsult(null, route);
+
+    console.log(data);
+
+    if(data == null){
+        return null;
+    }
 
     var inner = '<option value=""></option>'
 

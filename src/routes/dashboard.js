@@ -15,4 +15,8 @@ router.get('/productsImages', (req,res) =>{
     res.render('dashboard.html', {pagina: 'DASHBOARD', partial: 'PRODUCTS_IMAGES'})
 })
 
+router.get('/users', (req,res) =>{
+    res.render('dashboard.html', {pagina: 'DASHBOARD', partial: 'USERS'})
+})
+
 module.exports = router;

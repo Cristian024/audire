@@ -95,9 +95,3 @@ const routePartials = () => {
 
     TABLES.init(section)
 }
-
-
-
-
-
-
