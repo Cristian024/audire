@@ -18,12 +18,71 @@ export const headers = {
         "ID PRODUCTO",
         "NOMBRE DEL PRODUCTO",
     ],
+    lot: [
+        'ID',
+        'CANTIDAD EN STOCK',
+        'CANTIDAD ALMACENADA',
+        'ID DEPOSITO',
+        'NOMBRE DEPOSITO',
+        'CIUDAD PEPOSITO',
+        'ID PRODUCTO',
+        'NOMBRE PRODUCTO'
+    ],
+    depot: [
+        "ID",
+        "NOMBRE",
+        "DIRECCION",
+        "LATITUD",
+        "LONGITUD",
+        "ID CIUDAD",
+        "CIUDAD",
+        "NUMERO DE LOTES",
+        "LOTES"
+    ],
+    orders: [
+        'ID',
+        'FECHA PEDIDO',
+        'FECHA CANCELACIÓN',
+        'RAZON DE CANCELACIÓN',
+        'PRECIO TOTAL',
+        'SUB TOTAL',
+        'PRECIO DE ENVIO',
+        'DIRECCION',
+        'LATITUD',
+        'LONGITUD',
+        'CIUDAD',
+        'METODO DE PAGO',
+        'ESTADO',
+        'ID USUARIO',
+        'USUARIO',
+        'NUMERO DE PEDIDOS',
+        'ID PEDIDOS'
+    ],
+    orders_detail: [
+        'ID',
+        'CANITDAD PEDIDA',
+        'PRECIO TOTAL',
+        'ID PRODUCTO',
+        'PRODUCTO',
+        'PRECIO PRODUCTO',
+        'ID PEDIDO'
+    ],
+    comments: [
+        "ID",
+        "COMENTARIO",
+        "CALIFICACION",
+        "ID USUARIO",
+        "USUARIO",
+        "ID PRODUCTO",
+        "PRODUCTO"
+    ],
     users: [
         "ID",
         "NOMBRE",
         "CORREO",
         "CONTRASEÑA",
         "DIRECCION",
+        "CIUDAD",
         "TIPO DE DOCUMENTO",
         "DOCUMENTO",
         "TELEFONO",
@@ -36,11 +95,46 @@ export const headers = {
         "ROL",
         "ID ESTADO",
         "ESTADO",
+    ],
+    companies: [
+        'ID',
+        'NOMBRE',
+        'CELULAR',
+        'CORREO',
+        'DESCUENTO POR ENVIO',
+        'ID CIUDAD',
+        'CIUDAD'
+    ],
+    shipments: [
+        'ID',
+        'UBICACIÓN ACTUAL',
+        'UBICACIÓN ORIGEN',
+        'UBICACIÓN ENVIO',
+        'FECHA DE ENVIO',
+        'FECHA DE ENTREGA',
+        'ESTADO',
+        'ID COMPAÑIA',
+        'COMPAÑIA',
+        'CIUDAD COMPAÑIA',
+        'ID PEDIDO',
+        'ID REPARTIDOR',
+        'REPARTIDOR'
+    ],
+    earnings: [
+        'ID',
+        'TOTAL VENTA',
+        'TOTAL INGRESOS',
+        'DESCUENTO COMPAÑIA DE ENVIO',
+        'CIUDAD',
+        'ID COMPAÑIA',
+        'COMPAÑIA',
+        'ID PEDIDO',
+        'FECHA PEDIDO'
     ]
 }
 
 export const formFields = {
-    products:[
+    products: [
         {
             'label': 'Nombre',
             'type': 'text',
@@ -70,6 +164,58 @@ export const formFields = {
             'type': 'select',
             'options': 'products',
             'name': 'product'
+        }
+    ],
+    lot: [
+        {
+            'label': 'Cantidad en stock',
+            'type': 'number',
+            'name': 'quantityStock'
+        },
+        {
+            'label': 'Cantidad almacenada',
+            'type': 'number',
+            'name': 'quantityStored'
+        },
+        {
+            'label': 'Deposito',
+            'type': 'select',
+            'options': 'depot',
+            'name': 'depot'
+        },
+        {
+            'label': 'Producto',
+            'type': 'select',
+            'options': 'products',
+            'name': 'product'
+        }
+    ],
+    depot: [
+        {
+            'label': 'Nombre',
+            'type': 'text',
+            'name': 'name'
+        },
+        {
+            'label': 'Dirección',
+            'type': 'text',
+            'name': 'direction'
+        },
+        {
+            'label': 'Latitud',
+            'type': 'number',
+            'name': 'latitude'
+        },
+        {
+            'label': 'Longitud',
+            'type': 'number',
+            'name': 'longitude'
+        },
+        {
+            'label': 'Ciudad',
+            'type': 'select',
+            'options': 'cities',
+            'name': 'city',
         }
     ],
     users: [
@@ -155,7 +301,24 @@ export const formFields = {
 }
 
 export const partialsTitle = {
-    products:"Productos / Lista",
+    products: "Productos / Lista",
     products_images: "Productos / Imagenes",
-    users: "Usuarios"
-};
+    lot: "Productos / Lotes",
+    depot: "Productos / Depositos",
+    orders: "Pedidos / Lista de pedidos",
+    orders_details: "Pedidos / Detalles",
+    companies: "Compañias de envio / Lista de compañias",
+    shipments: "Compañias de envio / Envios",
+    comments: "Usuarios / Comentarios",
+    users: "Usuarios / Lista de usuarios",
+    earnings: "Ingresos"
+}
+
+export const editable = [
+    'products',
+    'products_images',
+    'lot',
+    'depot',
+    'users',
+    'companies'
+]

@@ -1,4 +1,4 @@
-import { headers, formFields, partialsTitle } from './dashboardData.js'
+import { headers, formFields, partialsTitle, editable } from './dashboardData.js'
 import * as FIREBASE from '../dependencies/firebase.js'
 import * as API from '../dependencies/apiMethods.js'
 
@@ -18,9 +18,10 @@ var operationInputs = document.querySelectorAll('.operation');
 var dialogDelete = document.querySelector('.dialog-delete');
 var acceptButton = document.querySelector('.acceptButton');
 var data;
-var titleSubpartial;
+var titleSubpartial = document.querySelector('.title-subpartial');
 
 var router;
+var isEditable;
 
 var addEntityButton = document.querySelector('#add-entity');;
 var discardChangesButton = document.querySelector('#discard-changes');;
@@ -34,27 +35,31 @@ var notificationConfig = {
     "background": null
 }
 
-
 export const init = async (route) => {
-    titleSubpartial = document.querySelector('.title-subpartial');
+    router = route;
 
-    router = route
-
-    data = await API.executeConsult(null, route);
+    isEditable = editable.includes(route);
 
     titleSubpartial.textContent = partialsTitle[route];
 
+    await insertHeaders(route);
     functionsDashboard();
 
+    API.executeConsult(null, route).then(
+        async function (value) {
+            data = value
+            await insertData(data);
+        },
+        function (error) {
+            validateStatusCode(error)
+        }
+    )
 
-    await insertHeaders(route);
-
-    await insertData(data)
-
-    await insertFields(route)
+    if (isEditable) await insertFields(route);
+    if (!isEditable) addEntityButton.remove();
 }
 
-const functionsDashboard = () =>{
+const functionsDashboard = () => {
     addEntityButton.addEventListener('click', (e) => {
         updateVist();
         formEntity.setAttribute('method', 'POST')
@@ -83,7 +88,7 @@ const functionsDashboard = () =>{
 }
 
 const insertHeaders = async (router) => {
-    const columns = headers[router];
+    const columns = headers[router] || null;
 
     headTable.innerHTML = "";
     bodyTable.innerHTML = "";
@@ -97,14 +102,16 @@ const insertHeaders = async (router) => {
         tr.append(th);
     });
 
-    const th = document.createElement('th')
-    th.textContent = 'OPERACIÓN'
-    tr.append(th);
+    if (isEditable) {
+        const th = document.createElement('th')
+        th.textContent = 'OPERACIÓN'
+        tr.append(th);
+    }
 }
 
 const insertData = async (data) => {
     if (data == null) {
-        alert('error request');
+        loadTable()
         return;
     }
 
@@ -119,23 +126,28 @@ const insertData = async (data) => {
 
         row.innerHTML = row_content;
 
-        var buttons = document.createElement('td');
+        if (isEditable) {
+            var buttons = document.createElement('td');
 
-        const editButton = getButtonsEntity(element.id)[0];
-        const deleteButton = getButtonsEntity(element.id)[1];
+            const editButton = getButtonsEntity(element.id)[0];
+            const deleteButton = getButtonsEntity(element.id)[1];
 
-        buttons.append(editButton);
-        buttons.append(deleteButton)
+            buttons.append(editButton);
+            buttons.append(deleteButton)
 
-        row.append(buttons)
+            row.append(buttons)
+        }
     });
 
     await loadTable()
 }
 
 const insertFields = async (route) => {
-    const fields = formFields[route];
+    const fields = formFields[route] || null;
     var inner = ""
+    if (fields == null) {
+        return
+    }
     await Promise.all(fields.map(async (fieldArray) => {
         const type = fieldArray.type;
         const name = fieldArray.name;
@@ -143,13 +155,6 @@ const insertFields = async (route) => {
         const accept = fieldArray.accept || null;
         const options = fieldArray.options || null;
         const route = fieldArray.route || null;
-
-        console.log('Constructor: :', {
-            'type': type,
-            'name': name,
-            'label': label,
-            'options': options
-        });
 
         if (type == 'textarea') {
             inner += `<label for="${name}">
@@ -161,7 +166,7 @@ const insertFields = async (route) => {
             ${label}
             <input type="${type}" name="${name}" class="field" required>
             </label>`;
-        } else if (type == 'number'){
+        } else if (type == 'number') {
             inner += `<label for="${name}">
             ${label}
             <input type="${type}" name="${name}" class="field" step="any" required>
@@ -176,18 +181,14 @@ const insertFields = async (route) => {
             const optionsForm = await getOptionsSelect(options);
             inner += `<label for="${name}">
             ${label}
-            <select name="${name}" class="field" required>
+            <select name="${name}" class="field" type="select" required>
                 ${optionsForm}
             </select>
             </label>`;
         }
-
-        console.log(`Termina ejecución: ${inner}`);
     }));
 
     inner += '<input id="form-entity-submit" name="submit" type="submit" style="display:none;">';
-
-    console.log(`Se inserta inner: ${inner}`);
 
     formEntity.innerHTML = inner
     setListenersFields();
@@ -240,16 +241,15 @@ const getButtonsEntity = (id) => {
 
     deleteButton.addEventListener('click', () => {
         dialogDelete.classList.toggle('active');
-        acceptButton.onclick = async function () {
-            await routerMethods('DELETE', null, id);
+        acceptButton.onclick = function () {
+            routerMethods('DELETE', null, id);
         }
     })
 
     editButton.addEventListener('click', async () => {
-        const response = await routerMethods('GET', null, id);
         formEntity.setAttribute('id-entity', (id));
         formEntity.setAttribute('method', 'UPDATE');
-        insertDataFormUpdate(response)
+        insertDataFormUpdate(id)
     })
 
     return [
@@ -261,52 +261,88 @@ const routerMethods = async (method, data, id) => {
     var response = null;
 
     switch (method) {
-        case 'GET':
-            response = await API.executeConsult(id, router);
-            break;
         case 'POST':
-            response = await API.executeInsert(data, router);
-            validateStatusCode(response);
-            updateVist()
+            response = API.executeInsert(data, router);
+            response.then(
+                function (value) {
+                    validateStatusCode(value)
+                },
+                function (error) {
+                    validateStatusCode(error)
+                }
+            ).finally(function () {
+                updateVist()
+            })
             break;
         case 'DELETE':
-            response = await API.executeDelete(id, router);
-            validateStatusCode(response)
-            dialogDelete.classList.toggle('active');
+            response = API.executeDelete(id, router)
+            response.then(
+                function (value) {
+                    validateStatusCode(value)
+                },
+                function (error) {
+                    validateStatusCode(error)
+                }
+            ).finally(function () {
+                dialogDelete.classList.toggle('active');
+            })
             break;
         case 'UPDATE':
-            response = await API.executeUpdate(data, id, router);
-            validateStatusCode(response);
-            updateVist();
+            response = API.executeUpdate(data, id, router);
+            response.then(
+                function (value) {
+                    validateStatusCode(value)
+                },
+                function (error) {
+                    validateStatusCode(error)
+                }
+            ).finally(function () {
+                updateVist()
+            })
             break;
     }
-
-    return response;
 }
 
-const insertDataFormUpdate = (response) => {
-    if (response == null) {
-        return;
-    }
+const insertDataFormUpdate = (id) => {
+    API.executeConsult(id, router).then(
+        function (response) {
+            const data = response[0];
 
-    const data = response[0];
+            const fields = formEntity.querySelectorAll('.field');
 
-    const fields = formEntity.querySelectorAll('.field');
-
-    fields.forEach(element => {
-        const name = element.getAttribute('name');
-        for (var key in data) {
-            if (key == name) {
-                if (element.getAttribute('type') == "file") {
-                    element.setAttribute('url', data[key])
-                } else {
-                    element.value = data[key];
+            fields.forEach(element => {
+                const name = element.getAttribute('name');
+                const type = element.getAttribute('type')
+                for (var key in data) {
+                    if (key == name) {
+                        if (type == "file") {
+                            element.setAttribute('url', data[key])
+                        } else if (type === "select") {
+                            if (!isNaN(data[key])) {
+                                element.value = data[key];
+                            } else {
+                                const options = element.querySelectorAll('option')
+                                console.log(options);
+                                console.log(`Key: ${key} Value: ${data[key]}`);
+                                options.forEach(option => {
+                                    if (option.textContent == data[key]) {
+                                        element.value = option.value
+                                    }
+                                });
+                            }
+                        } else {
+                            element.value = data[key];
+                        }
+                    }
                 }
-            }
-        }
-    });
+            });
 
-    updateVist()
+            updateVist()
+        },
+        function (error) {
+            validateStatusCode(error)
+        }
+    )
 }
 
 export const updateVist = () => {
@@ -433,12 +469,6 @@ const uploadFile = async (reference, file, input, progress) => {
 
 const getOptionsSelect = async (route) => {
     const data = await API.executeConsult(null, route);
-
-    console.log(data);
-
-    if(data == null){
-        return null;
-    }
 
     var inner = '<option value=""></option>'
 
