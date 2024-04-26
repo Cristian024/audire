@@ -23,10 +23,10 @@ var titleSubpartial = document.querySelector('.title-subpartial');
 var router;
 var isEditable;
 
-var addEntityButton = document.querySelector('#add-entity');;
-var discardChangesButton = document.querySelector('#discard-changes');;
-var saveChangesButton = document.querySelector('#save-changes');;
-var declineButton = document.querySelector('.declineButton');;
+var addEntityButton = document.querySelector('#add-entity');
+var discardChangesButton = document.querySelector('#discard-changes');
+var saveChangesButton = document.querySelector('#save-changes');
+var declineButton = document.querySelector('.declineButton');
 
 var notification;
 
@@ -57,6 +57,10 @@ export const init = async (route) => {
 
     if (isEditable) await insertFields(route);
     if (!isEditable) addEntityButton.remove();
+
+    document.querySelectorAll('.title').forEach(element =>{
+        console.log(element.innerText);
+    })
 }
 
 const functionsDashboard = () => {
