@@ -123,7 +123,45 @@ export const executeUpdate = async (data, id, route) => {
     })
 }
 
+export const consultLogin = async (data) =>{
+    const loginUrl = url + `?route=user_login`
+
+    return new Promise(async function(resolve, reject){
+        try {
+            const response = await fetch(loginUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8'
+                },
+                body: JSON.stringify(data)
+            });
+
+            data = response.text();
+            const data_response = await data.then(res => {
+                return JSON.parse(res);
+            })
+
+            switch(data_response.status){
+                case 204:
+                    resolve(data_response.status);
+                    break;
+                case 205:
+                    resolve(data_response.status);
+                    break;
+                case 202:
+                    reject({message:'El usuario no existe'});
+                    break;
+                case 203:
+                    reject({message: 'Contraseña incorrecta'});
+                    break;
+            }
+        } catch (error) {
+            reject(exceptionCode500)
+        }
+    })
+}
+
 const exceptionCode500 = {
     'status': 500,
-    'message': 'Internal Error: Server has gonne'
+    'message': 'Error en el servidor'
 }

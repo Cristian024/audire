@@ -1,6 +1,7 @@
-import { headers, formFields, partialsTitle, editable } from './dashboardData.js'
-import * as FIREBASE from '../dependencies/firebase.js'
-import * as API from '../dependencies/apiMethods.js'
+import { headers, formFields, partialsTitle, editable } from './dashboardData.js';
+import * as FIREBASE from '../dependencies/firebase.js';
+import * as API from '../dependencies/apiMethods.js';
+import { showMessagePopup } from '../dependencies/notification.js';
 
 var headTable = document.querySelector('.table-head-entity');
 var tableBody = document.querySelector('.table-body-entity');
@@ -58,7 +59,7 @@ export const init = async (route) => {
     if (isEditable) await insertFields(route);
     if (!isEditable) addEntityButton.remove();
 
-    document.querySelectorAll('.title').forEach(element =>{
+    document.querySelectorAll('.title').forEach(element => {
         console.log(element.innerText);
     })
 }
@@ -427,19 +428,6 @@ const validateStatusCode = (response) => {
 
     showMessagePopup(notificationConfig)
     emptyFields()
-}
-
-const showMessagePopup = (config) => {
-    notification = Toastify({
-        text: config.text,
-        style: {
-            background: `linear-gradient(to right, ${config.background}, ${config.background})`
-        },
-        gravity: "bottom",
-        position: "right",
-        close: true,
-        stopOnFocus: true
-    }).showToast()
 }
 
 const emptyFields = () => {

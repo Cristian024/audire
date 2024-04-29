@@ -15,9 +15,15 @@ body{
     width: 60vw;
     min-height: 80vh;
     overflow: hidden;
+    grid-template-areas: "item1 item2";
+}
+
+.form-container.register{
+    grid-template-areas: "item2 item1";
 }
 
 .form-container .image-form{
+    grid-area: item1;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -33,11 +39,10 @@ body{
 }
 
 .form-container .image-form .logo{
-    width: 10rem;
+    width: calc(100% - 30px);
     position: absolute;
     z-index: 10;
     top: 20px;
-    left: 20px;
 }
 
 #canvas-gradient{
@@ -52,6 +57,7 @@ body{
 }
 
 .form-container .form_subcontainer{
+    grid-area: item2;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -113,7 +119,8 @@ body{
 }
 
 .form-container .form_subcontainer form label input[type="text"],
-.form-container .form_subcontainer form label input[type="password"]{    
+.form-container .form_subcontainer form label input[type="password"],
+.form-container .form_subcontainer form label input[type="email"]{    
     width: 100%;
     height: 2.8rem;
     border-radius: 5px;

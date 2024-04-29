@@ -18,8 +18,11 @@ window.addEventListener('load', () => {
         case "INDEX":
             INDEX.default()
             break;
+        case "REGISTER":
+            LOGIN.initRegister()
+            break;
         case "LOGIN":
-            LOGIN.default()
+            LOGIN.initLogin()
             break;
         case "PRODUCTS":
             PRODUCTS.default()
@@ -34,7 +37,6 @@ window.addEventListener('load', () => {
             window.location = '../'
             break;
     }
-
 
     logo?.addEventListener('click', () => {
         window.location = '../'

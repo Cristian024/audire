@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Register</title>
     <%- include('./partials/head.html') %>
     <link rel="stylesheet" href="../css/login.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
@@ -11,35 +11,36 @@
 <body class="<%= pagina %>">
     <%- include('./partials/loader.html') %>
 
-
-
-    <div class="form-container">
+    <div class="form-container register" sty>
         <div class="image-form">
-            <span class="logo bebas">Unitec</span>
-            <h1 class="satoshi bold">Bienvenido de nuevo</h1>
+            <span class="logo bebas" style="text-align: right;">Unitec</span>
+            <h1 class="satoshi bold">Descubre la magia del sonido</h1>
             <canvas id="canvas-gradient" data-transition-in data-v-79abd109></canvas>
         </div>
         <div class="form_subcontainer satoshi">
             <div class="form_login">
-                <h2 class="bold">Login</h2>
+                <h2 class="bold" style="text-align: left;">Register</h2>
                 <p class="phrase_l">Explora nuestra exclusiva colección de productos donde la calidad se fusiona con la innovación.</p>
                 <form class="form_user">
                     <label for="name_input_l">
                         Usuario
-                        <input type="text" name="name_input_l" required>
+                        <input type="text" name="name_input_r" required>
+                    </label>
+
+                    <label for="email_input_l">
+                        Correo
+                        <input type="email" name="email_input_r" required>
                     </label>
 
                     <label for="password_input_l">
                         Contraseña
-                        <input type="password" name="password_input_l" required>
+                        <input type="password" name="password_input_r" required>
                     </label>
 
-                    <p class="f_password">Se te olvidó la contraseña?</p>
+                    <input class="login_btn satoshi bold" type="submit" value="Registrar">
 
-                    <input class="login_btn satoshi bold" type="submit" value="Ingresar">
-
-                    <a href="./register">
-                        <p class="user_new_btn">Eres nuevo? <b>registrate</b></p>
+                    <a href="./login">
+                        <p class="user_new_btn">Ya estás registrado? <b>Inicia sesión</b></p>
                     </a>
                 </form>
             </div>
