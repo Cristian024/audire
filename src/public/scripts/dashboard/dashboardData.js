@@ -292,7 +292,35 @@ export const formFields = {
             'name': 'state'
         },
         {
-            'label': 'City',
+            'label': 'Ciudad',
+            'type': 'select',
+            'options': 'cities',
+            'name': 'city'
+        }
+    ],
+    companies: [
+        {
+            'label': 'Nombre',
+            'type': 'text',
+            'name': 'name'
+        },
+        {
+            'label': 'Numero telefonico',
+            'type': 'number',
+            'name': 'cellphone'
+        },
+        {
+            'label': 'Correo',
+            'type': 'email',
+            'name': 'email'
+        },
+        {
+            'label': 'Descuento por envio',
+            'type': 'number',
+            'name': 'shipingDiscount'
+        },
+        {
+            'label': 'Ciudad',
             'type': 'select',
             'options': 'cities',
             'name': 'city'

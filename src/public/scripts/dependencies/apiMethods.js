@@ -112,7 +112,7 @@ export const executeUpdate = async (data, id, route) => {
                 return JSON.parse(res);
             })
 
-            if(data_response.status != 200){
+            if (data_response.status != 200) {
                 reject(data_response)
             }
 
@@ -123,10 +123,10 @@ export const executeUpdate = async (data, id, route) => {
     })
 }
 
-export const consultLogin = async (data) =>{
+export const consultLogin = async (data) => {
     const loginUrl = url + `?route=user_login`
 
-    return new Promise(async function(resolve, reject){
+    return new Promise(async function (resolve, reject) {
         try {
             const response = await fetch(loginUrl, {
                 method: 'POST',
@@ -141,7 +141,7 @@ export const consultLogin = async (data) =>{
                 return JSON.parse(res);
             })
 
-            switch(data_response.status){
+            switch (data_response.status) {
                 case 204:
                     resolve(data_response.status);
                     break;
@@ -149,10 +149,16 @@ export const consultLogin = async (data) =>{
                     resolve(data_response.status);
                     break;
                 case 202:
-                    reject({message:'El usuario no existe'});
+                    reject({ message: 'El usuario no existe' });
                     break;
                 case 203:
-                    reject({message: 'Contraseña incorrecta'});
+                    reject({ message: 'Contraseña incorrecta' });
+                    break;
+                case 206:
+                    reject({ message: 'El usuario está deshabilitado' })
+                    break;
+                case 500:
+                    reject({ message: 'Error en el servidor' })
                     break;
             }
         } catch (error) {

@@ -79,6 +79,24 @@ const functionsDashboard = () => {
         navigation.classList.toggle("active");
         main.classList.toggle("active");
     };
+
+    window.addEventListener('pageshow', async (e) =>{
+        console.log('Vuelve a la pagina');
+        if(e.persisted){
+            const response = await fetch('../validateSession',{
+                method: 'GET'
+            })
+
+            const data = response.text();
+            const data_response = await data.then(res => {
+                return JSON.parse(res);
+            })
+
+            if(data_response.sessionExpires){
+                window.location = '../'
+            }
+        }
+    })
 }
 
 const routePartials = () => {
@@ -91,7 +109,6 @@ const routePartials = () => {
         cardBox.remove();
         details.remove();
         dashboardQueryInput.remove();
+        TABLES.init(section)
     }
-
-    TABLES.init(section)
 }

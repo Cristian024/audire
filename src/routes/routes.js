@@ -16,18 +16,32 @@ router.get('/login', (req, res) => {
 
 router.post('/login', (req, res) =>{
     let userName = req.body.email;
-    let userPassword = req.body.password;
     let userRole = req.body.role
 
     req.session.loggedin = true;
-    req.username = userName;
-    req.password = userPassword;
-    req.role = userRole;
+    req.session.username = userName;
+    req.session.role = userRole;
 
     if(userRole == 204){
-        res.redirect('./');
+        res.send({url: '../'});
     }else if(userRole == 205){
-        res.redirect('./dashboard');
+        res.send({url: '../dashboard'});
+    }
+})
+
+router.get('/logout', (req,res) =>{
+    req.session.destroy();
+    res.redirect('../');
+})
+
+router.get('/validateSession', (req,res) =>{
+    if(req.session !== undefined){
+        const loggedin = req.session.loggedin || false;
+        if(!loggedin){
+            res.send({sessionExpires: true});
+        }
+    }else{
+        res.send({sessionExpires: true});
     }
 })
 

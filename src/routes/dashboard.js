@@ -2,57 +2,67 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs')
 const path = require('path')
+const session = require('express-session');
 
 router.get('/', (req, res) => {
-    render(res, 'HOME')
+    render(res, 'HOME', req)
 })
 
 router.get('/products', (req, res) => {
-    render(res, 'PRODUCTS')
+    render(res, 'PRODUCTS', req)
 })
 
 router.get('/productsImages', (req, res) => {
-    render(res, 'PRODUCTS_IMAGES')
+    render(res, 'PRODUCTS_IMAGES', req)
 })
 
 router.get('/comments', (req, res) => {
-    render(res, 'COMMENTS')
+    render(res, 'COMMENTS', req)
 })
 
 router.get('/users', (req, res) => {
-    render(res, 'USERS')
+    render(res, 'USERS', req)
 })
 
 router.get('/lots', (req, res) => {
-    render(res, 'LOT');
+    render(res, 'LOT', req);
 })
 
 router.get('/depots', (req, res) => {
-    render(res, 'DEPOT');
+    render(res, 'DEPOT', req);
 })
 
 router.get('/orders', (req, res) => {
-    render(res, 'ORDERS');
+    render(res, 'ORDERS', req);
 })
 
 router.get('/ordersDetails', (req, res) =>{
-    render(res, 'ORDERS_DETAIL')
+    render(res, 'ORDERS_DETAIL', req);
 })
 
 router.get('/companies', (req ,res) =>{
-    render(res, 'COMPANIES')
+    render(res, 'COMPANIES', req);
 })
 
 router.get('/shipments', (req,res) =>{
-    render(res, 'SHIPMENTS')
+    render(res, 'SHIPMENTS', req);
 })
 
 router.get('/earnings', (req, res) =>{
-    render(res, 'EARNINGS')
+    render(res, 'EARNINGS', req);
 })
 
-const render = (res, partial) => {
-    res.render('dashboard.html', { pagina: 'DASHBOARD', partial: partial })
+const render = (res, partial, req) => {
+    const loggedin = req.session.loggedin;
+    const role = req.session.role;
+
+    console.log(req.session);
+
+    if(loggedin && role === 205){
+        res.render('dashboard.html', { pagina: 'DASHBOARD', partial: partial })
+    }else{
+        res.redirect('../')
+    }
 }
 
 module.exports = router;

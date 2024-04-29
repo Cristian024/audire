@@ -417,6 +417,7 @@ const validateStatusCode = (response) => {
             }, 1500);
             break;
         case 400:
+            console.log(response.message);
             notificationConfig.text = response.message;
             notificationConfig.background = "red";
             break;

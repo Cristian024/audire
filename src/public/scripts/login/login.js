@@ -58,6 +58,9 @@ const registerUser = async (e) => {
             function (value) {
                 notificationConfig.text = "Usuario registrado con exito";
                 notificationConfig.background = 'green';
+                setTimeout(() => {
+                    loginUser(data);
+                }, 1500);
             },
             function (error) {
                 switch (error.status) {
@@ -79,20 +82,27 @@ const registerUser = async (e) => {
 const loginUser = async (data) => {
     API.consultLogin(data)
         .then(
-            function (value) {
+            async function (value) {
                 const dataPost = {
                     email: data.email,
                     password: data.password,
                     role: value
                 }
                 
-                fetch('../login',{
+                const response = await fetch('../login',{
                     method:'POST',
                     headers: {
                         'Content-Type': 'application/json; charset=utf-8'
                     },
                     body: JSON.stringify(dataPost)
                 })
+
+                const dataR = response.text();
+                const data_response = await dataR.then(res => {
+                    return JSON.parse(res);
+                })
+
+                window.location = data_response.url;
             },
             function (error) {
                 notificationConfig.background = "red";
