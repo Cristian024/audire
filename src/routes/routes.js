@@ -14,7 +14,7 @@ router.get('/login', (req, res) => {
     res.render('login.html', { pagina: 'LOGIN' })
 })
 
-router.post('/login', (req, res) =>{
+router.post('/login', (req, res) => {
     let userName = req.body.email;
     let userRole = req.body.role
 
@@ -22,26 +22,38 @@ router.post('/login', (req, res) =>{
     req.session.username = userName;
     req.session.role = userRole;
 
-    if(userRole == 204){
-        res.send({url: '../'});
-    }else if(userRole == 205){
-        res.send({url: '../dashboard'});
+    if (userRole == 204) {
+        res.send({ url: '../products' });
+    } else if (userRole == 205) {
+        res.send({ url: '../dashboard' });
     }
 })
 
-router.get('/logout', (req,res) =>{
+router.get('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('../');
 })
 
-router.get('/validateSession', (req,res) =>{
-    if(req.session !== undefined){
+router.get('/validateSession', (req, res) => {
+    if (req.session !== undefined) {
         const loggedin = req.session.loggedin || false;
-        if(!loggedin){
-            res.send({sessionExpires: true});
+        if (!loggedin) {
+            res.send({ sessionExpires: true });
+        } else {
+            const userRole = req.session.role;
+            var url;
+            var isClient;
+            if (userRole == 204) {
+                url = '../products'
+                isClient = true;
+            } else if (userRole == 205) {
+                url = '../dashboard'
+                isClient = false;
+            }
+            res.send({ sessionExpires: false, url: url, isClient: isClient });
         }
-    }else{
-        res.send({sessionExpires: true});
+    } else {
+        res.send({ sessionExpires: true });
     }
 })
 

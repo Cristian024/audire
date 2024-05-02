@@ -2,6 +2,8 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.121.1/build/three.m
 import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/loaders/GLTFLoader.js";
 import * as CARDS from "../products/cards.js"
 import {loadPage} from '../script.js'
+import * as API from "../dependencies/apiMethods.js"
+import { showMessagePopup, notificationConfig } from '../dependencies/notification.js';
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -22,6 +24,8 @@ var button_login;
 const ROUTE_HEADPHONES = '../models3D/headphones/audifonosV3.gltf';
 
 var lenis;
+
+var splideList;
 
 const sizes = {
     width: window.innerWidth,
@@ -219,14 +223,17 @@ const initCanvasPrincipal = () => {
     }
 }
 
-export default () => {
+export default async() => {
     lenis = new Lenis()
     canvas_principal = document.querySelector('.canvas-principal')
     canvas_product = document.querySelector('.canvas-product')
     button_login = document.querySelector('.order-btn')
+    splideList = document.querySelector('.splide__list')
 
     initCanvasPrincipal()
     initCanvasProduct()
+
+    await loadData();
 
     var splide = new Splide('.splide', {
         perPage: 2,
@@ -235,17 +242,39 @@ export default () => {
         pagination: false
     })
 
-    button_login.addEventListener('click', () => {
-        window.location = '../login'
+    await validateSessionButton();
+    window.addEventListener('pageshow', async (e) =>{
+        if(e.persisted){
+            await validateSessionButton();
+        }
     })
 
     splide.mount()
 
-    cards = document.querySelectorAll('.splide_item')
-    CARDS.redirectUrl(cards)
-
     animate()
     requestAnimationFrame(raf)
+}
+
+async function validateSessionButton() {
+    const response = await fetch('../validateSession',{
+        method: 'GET'
+    })
+
+    const data = response.text();
+    var url;
+    const data_response = await data.then(res => {
+        return JSON.parse(res);
+    })
+
+    if(data_response.sessionExpires){
+        url = '../login';
+    }else{
+        url = data_response.url;
+    }
+
+    button_login.addEventListener('click', () => {
+        window.location = url
+    })
 }
 
 function raf(time) {
@@ -257,4 +286,45 @@ function animate() {
     renderer_principal.render(scene_principal, camera_principal)
     renderer_product.render(scene_product, camera_product)
     requestAnimationFrame(animate)
+}
+
+const loadData = async() =>{
+    await API.executeConsult(null, 'products')
+    .then(
+        async function(value){
+            await showProducts(value);
+        },
+        function(error){
+            notificationConfig.text = "Error en el servidor"
+            notificationConfig.background = "Red"
+            showMessagePopup(notificationConfig)
+        }
+    )
+}
+
+const showProducts = async(value) =>{
+    value.forEach(element => {
+        var imageData;
+        if(parseInt(element.quantityImages) > 0){
+            const images = element.imagesURL;
+            const arrayImages = images.split(',');
+            imageData = arrayImages[0]
+        }else{
+            imageData = ''
+        }
+
+        const data = {
+            id: element.id,
+            name: element.name,
+            price: element.price,
+            url: imageData
+        };
+
+        const elementList = CARDS.initCardIndex(data);
+        const li = document.createElement('li');
+        li.classList.add('splide__slide')
+
+        li.appendChild(elementList);
+        splideList.appendChild(li);
+    });
 }

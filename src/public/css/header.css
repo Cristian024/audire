@@ -45,7 +45,8 @@ header .menu-side .menu-icon{
     margin-left: 0.5em;
 }
 
-header .menu-side .order-btn{
+header .menu-side .order-btn,
+header .menu-side .button-logout{
     margin-right: 4em;
     height: 2.5em;
     width: 10em;
@@ -58,7 +59,8 @@ header .menu-side .order-btn{
     transition: 0.2s ease-in-out;
 }
 
-header .menu-side .order-btn:hover{
+header .menu-side .order-btn:hover,
+header .menu-side .button-logout:hover{
     color: black;
     background-color: white;
 }

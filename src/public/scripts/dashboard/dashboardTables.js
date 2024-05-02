@@ -1,7 +1,7 @@
 import { headers, formFields, partialsTitle, editable } from './dashboardData.js';
 import * as FIREBASE from '../dependencies/firebase.js';
 import * as API from '../dependencies/apiMethods.js';
-import { showMessagePopup } from '../dependencies/notification.js';
+import { showMessagePopup, notificationConfig } from '../dependencies/notification.js';
 
 var headTable = document.querySelector('.table-head-entity');
 var tableBody = document.querySelector('.table-body-entity');
@@ -30,11 +30,6 @@ var saveChangesButton = document.querySelector('#save-changes');
 var declineButton = document.querySelector('.declineButton');
 
 var notification;
-
-var notificationConfig = {
-    "text": null,
-    "background": null
-}
 
 export const init = async (route) => {
     router = route;

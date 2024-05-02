@@ -26,8 +26,7 @@ export const executeConsult = async (id, route) => {
                 reject(data_json)
             }
 
-            resolve(data_json)
-
+            resolve(data_json);
         } catch (error) {
             reject(exceptionCode500)
         }

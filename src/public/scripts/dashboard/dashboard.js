@@ -81,7 +81,6 @@ const functionsDashboard = () => {
     };
 
     window.addEventListener('pageshow', async (e) =>{
-        console.log('Vuelve a la pagina');
         if(e.persisted){
             const response = await fetch('../validateSession',{
                 method: 'GET'

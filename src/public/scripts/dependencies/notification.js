@@ -1,4 +1,8 @@
 var notification;
+export const notificationConfig = {
+    text: null,
+    background: null
+}
 
 export const showMessagePopup = (config) => {
     notification = Toastify({

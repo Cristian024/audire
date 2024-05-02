@@ -56,8 +56,6 @@ const render = (res, partial, req) => {
     const loggedin = req.session.loggedin;
     const role = req.session.role;
 
-    console.log(req.session);
-
     if(loggedin && role === 205){
         res.render('dashboard.html', { pagina: 'DASHBOARD', partial: partial })
     }else{
