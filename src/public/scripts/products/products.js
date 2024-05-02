@@ -176,7 +176,7 @@ const addToCart = async(id) => {
         }else{
             CARLIST.getOrder().then(
                 async function(value){
-                    await CARLIST.addOrder({id: id, quantity: 1})
+                    await CARLIST.addOrderDetail({id: id, quantity: 1})
                     .then(
                         function(value){
                             window.location = '../carlist/list';

@@ -63,7 +63,7 @@ export const getOrder = () => {
     })
 }
 
-export const addOrder = async (data) => {
+export const addOrderDetail = async (data) => {
     return new Promise(async function (resolve, reject) {
         orderDetails = JSON.parse(storage.getItem('orderDetails'));
         API.executeConsult(data.id, 'products')
@@ -104,7 +104,7 @@ export const addOrder = async (data) => {
     })
 }
 
-export const deleteOrder = (productId, div) =>{
+export const deleteOrderDetail = (productId) =>{
     return new Promise(function(resolve, reject){
         getOrderDetails().then(
             function(value){
@@ -115,7 +115,6 @@ export const deleteOrder = (productId, div) =>{
                         exists = true;
 
                         value.splice(index, 1);
-                        div.remove();
 
                         storage.setItem('orderDetails', JSON.stringify(value));
                         return;
@@ -140,5 +139,34 @@ export const getOrderDetails = async () =>{
         }else{
             resolve(orderDetails);
         }
+    })
+}
+
+export const updateOrderDetail = async (productId, price, quantity) =>{
+    return new Promise(function(resolve,reject){
+        getOrderDetails().then(
+            function(value){    
+                var exists = false;
+                var priceReturn;
+                value.forEach(function(element, index) {
+                    if (element.product == productId){
+                        exists = true;
+
+                        element.totalPrice = price*quantity;
+                        element.quantity = quantity;
+
+                        priceReturn = element.totalPrice;
+
+                        storage.setItem('orderDetails', JSON.stringify(value));
+                        return;
+                    }
+                });
+
+                if(exists) resolve({message: 'Producto actualizado con exito', price: priceReturn}) ?? reject({reason: 'No se pudo actualizar el producto'});
+            },
+            function(error){
+                reject({reason: 'No se pudo actualizar el producto'});
+            }
+        )
     })
 }

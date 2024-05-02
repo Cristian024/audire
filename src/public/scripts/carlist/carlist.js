@@ -97,12 +97,55 @@ const init_list = async () => {
         });
     }
 
+    const updateProduct = async (productId, price, div, operation, priceDiv) => {
+        try {
+            var quantity;
+            if (operation == 'add'){
+                quantity = parseInt(div.textContent) + 1;
+            } else if(operation == 'sub'){
+                quantity = parseInt(div.textContent) - 1
+            }
+
+            if (quantity < 1) {
+                notificationConfig.background = 'Red';
+                notificationConfig.text = 'La cantidad debe ser mayor a 0';
+                showMessagePopup(notificationConfig);
+                return;
+            }
+
+            CONTROLLER.updateOrderDetail(productId, price, quantity)
+                .then(
+                    function (value) {
+                        div.textContent = quantity;
+                        priceDiv.textContent = `$${value.price}`;
+                        notificationConfig.text = value.message;
+                        notificationConfig.background = 'green';
+                    },
+                    function (error) {
+                        notificationConfig.text = error.reason;
+                        notificationConfig.background = 'red';
+                    }
+                ).finally(
+                    function () {
+                        showMessagePopup(notificationConfig);
+                    }
+                )
+
+
+        } catch (error) {
+            notificationConfig.background = 'red';
+            notificationConfig.text = 'Error en el servidor';
+            showMessagePopup(notificationConfig);
+        }
+    }
+
     const deleteProduct = async (productId, div) => {
-        CONTROLLER.deleteOrder(productId, div)
+        CONTROLLER.deleteOrderDetail(productId)
             .then(
                 function (value) {
+                    div.remove();
                     notificationConfig.background = 'green',
-                        notificationConfig.text = value.message;
+                    notificationConfig.text = value.message;
                 },
                 function (error) {
                     notificationConfig.background = 'red';
@@ -154,8 +197,16 @@ const init_list = async () => {
         const addButton = document.createElement('ion-icon');
         addButton.setAttribute('name', 'add-circle-outline');
 
+        addButton.addEventListener('click', () => {
+            updateProduct(data.id, data.price, divIN.querySelector('p'), 'add', divPC.querySelector('h2'));
+        })
+
         const subButton = document.createElement('ion-icon');
         subButton.setAttribute('name', 'remove-circle-outline');
+
+        subButton.addEventListener('click', () =>{
+            updateProduct(data.id, data.price, divIN.querySelector('p'), 'sub', divPC.querySelector('h2'));
+        })
 
         divIN.insertBefore(addButton, divIN.querySelector('p'));
         divIN.append(subButton)
