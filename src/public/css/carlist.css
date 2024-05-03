@@ -117,9 +117,25 @@ h1 {
 
 /*INFORMATION*/
 
-.form-description {
-    width: 100%;
+.information-container{
+    position: relative;
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
     padding: 50px;
+}
+
+.information-container .car-total{
+    width: 40%;
+    height: auto;
+    color: white;
+    position: sticky;
+    position: -webkit-sticky;
+    top: 100px;
+}
+
+.form-description {
+    width: 50%;
 }
 
 .form-description h2{

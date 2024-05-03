@@ -58,7 +58,21 @@ export default async () => {
 }
 
 const toggleSection = (pos) => {
-    status_list[pos].classList.add('active')
+    status_list[pos].classList.add('active');
+    
+    status_list[0].addEventListener('click', () =>{
+        window.location = '../carlist/list';
+    })
+    status_list[1].addEventListener('click', ()=>{
+        window.location = '../carlist/information';
+    })
+    status_list[2].addEventListener('click', ()=>{
+        window.location = '../carlist/payment';
+    })
+    status_list[3].addEventListener('click', () =>{
+        window.location = '../carlist/confirmation';
+    })
+
     for (let i = 0; i < sections.length; i++) {
         if (i != pos) {
             sections[i].remove()
@@ -100,9 +114,9 @@ const init_list = async () => {
     const updateProduct = async (productId, price, div, operation, priceDiv) => {
         try {
             var quantity;
-            if (operation == 'add'){
+            if (operation == 'add') {
                 quantity = parseInt(div.textContent) + 1;
-            } else if(operation == 'sub'){
+            } else if (operation == 'sub') {
                 quantity = parseInt(div.textContent) - 1
             }
 
@@ -120,6 +134,7 @@ const init_list = async () => {
                         priceDiv.textContent = `$${value.price}`;
                         notificationConfig.text = value.message;
                         notificationConfig.background = 'green';
+                        updateOrder()
                     },
                     function (error) {
                         notificationConfig.text = error.reason;
@@ -130,8 +145,6 @@ const init_list = async () => {
                         showMessagePopup(notificationConfig);
                     }
                 )
-
-
         } catch (error) {
             notificationConfig.background = 'red';
             notificationConfig.text = 'Error en el servidor';
@@ -144,8 +157,9 @@ const init_list = async () => {
             .then(
                 function (value) {
                     div.remove();
+                    updateOrder();
                     notificationConfig.background = 'green',
-                    notificationConfig.text = value.message;
+                        notificationConfig.text = value.message;
                 },
                 function (error) {
                     notificationConfig.background = 'red';
@@ -154,6 +168,25 @@ const init_list = async () => {
             .finally(function () {
                 showMessagePopup(notificationConfig)
             })
+    }
+
+    const updateOrder = async () => {
+        const subtotal = document.querySelector('.subtotal-car');
+        const total = document.querySelector('.total-car');
+        CONTROLLER.updateOrder().then(
+            function (value) {
+                notificationConfig.text = value.message;
+                notificationConfig.background = 'green';
+                subtotal.textContent = `$${value.subtotal}`;
+                total.textContent = `$${value.subtotal}`;
+            },
+            function (error) {
+                notificationConfig.text = value.reason;
+                notificationConfig.background = 'red';
+            }
+        ).finally(function () {
+            showMessagePopup(notificationConfig);
+        })
     }
 
     const getProductCard = (data, order) => {
@@ -204,7 +237,7 @@ const init_list = async () => {
         const subButton = document.createElement('ion-icon');
         subButton.setAttribute('name', 'remove-circle-outline');
 
-        subButton.addEventListener('click', () =>{
+        subButton.addEventListener('click', () => {
             updateProduct(data.id, data.price, divIN.querySelector('p'), 'sub', divPC.querySelector('h2'));
         })
 
@@ -216,6 +249,20 @@ const init_list = async () => {
         return div;
     }
 
+    CONTROLLER.getOrder().then(
+        function (value) {
+            const subtotal = document.querySelector('.subtotal-car');
+            const total = document.querySelector('.total-car');
+            const price = value.subTotal || 0;
+
+            subtotal.textContent = `$${price}`;
+            total.textContent = `$${price}`;
+        },
+        function (error) {
+            
+        }
+    )
+
     CONTROLLER.getOrderDetails().then(
         function (value) {
             showListProducts(value);
@@ -226,7 +273,6 @@ const init_list = async () => {
             showMessagePopup(notificationConfig);
         }
     )
-
 
     const nextStep = () => {
         var clientContinue = false;

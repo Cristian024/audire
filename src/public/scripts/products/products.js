@@ -2,7 +2,7 @@ import * as CARDS from "./cards.js";
 import * as API from "../dependencies/apiMethods.js";
 import * as CARLIST from '../carlist/carlistController.js'
 import { loadPage } from '../script.js';
-import {showMessagePopup, notificationConfig} from '../dependencies/notification.js'
+import { showMessagePopup, notificationConfig } from '../dependencies/notification.js'
 
 var lenis;
 var PRODUCT_ID;
@@ -163,32 +163,41 @@ async function loadProduct(id) {
     })
 }
 
-const addToCart = async(id) => {
+const addToCart = async (id) => {
     const data_response = await validateSession();
 
-    if(data_response.sessionExpires){
+    if (data_response.sessionExpires) {
         window.location = '../login';
-    }else{
-        if(!data_response.isClient){
+    } else {
+        if (!data_response.isClient) {
             notificationConfig.background = "red"
             notificationConfig.text = "Eres administrador, no puedes añadir productos al carrito"
             showMessagePopup(notificationConfig);
-        }else{
+        } else {
             CARLIST.getOrder().then(
-                async function(value){
-                    await CARLIST.addOrderDetail({id: id, quantity: 1})
-                    .then(
-                        function(value){
-                            window.location = '../carlist/list';
-                        },
-                        function(error){
-                            notificationConfig.background = "red";
-                            notificationConfig.text = error.reason;
-                            showMessagePopup(notificationConfig); 
-                        }
-                    )
+                async function (value) {
+                    await CARLIST.addOrderDetail({ id: id, quantity: 1 })
+                        .then(
+                            function (value) {
+                                CARLIST.updateOrder().then(
+                                    function (value) {
+                                        window.location = '../carlist/list';
+                                    },
+                                    function (error) {
+                                        notificationConfig.background = "red";
+                                        notificationConfig.text = error.reason;
+                                        showMessagePopup(notificationConfig);
+                                    }
+                                )
+                            },
+                            function (error) {
+                                notificationConfig.background = "red";
+                                notificationConfig.text = error.reason;
+                                showMessagePopup(notificationConfig);
+                            }
+                        )
                 },
-                function(error){
+                function (error) {
                     notificationConfig.background = "red";
                     notificationConfig.text = `Error en el servidor`;
                     showMessagePopup(notificationConfig)

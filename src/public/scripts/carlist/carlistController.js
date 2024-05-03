@@ -63,6 +63,37 @@ export const getOrder = () => {
     })
 }
 
+export const updateOrder = () =>{
+    return new Promise(function(resolve, reject){
+        getOrder().then(
+            function(value){
+                const order = value;
+                getOrderDetails().then(
+                    function(value){
+                        var total = 0; 
+                        value.forEach(element => {
+                            const subtotal = parseInt(element.totalPrice);
+                            total = total + subtotal;
+                        });
+
+                        order.subTotal = total;
+                        storage.setItem('order', JSON.stringify(order));
+                        resolve({message: 'Orden actualizada', subtotal: total});
+                    },
+                    function(error){
+                        order.subTotal = 0;
+                        storage.setItem('order', JSON.stringify(order));
+                        resolve({message: 'Orden actualizada', subtotal: 0});
+                    }
+                )
+            },
+            function(error){
+                reject({reason: 'No se pudo actualizar la orden'});
+            }
+        )
+    })
+}
+
 export const addOrderDetail = async (data) => {
     return new Promise(async function (resolve, reject) {
         orderDetails = JSON.parse(storage.getItem('orderDetails'));
