@@ -130,6 +130,11 @@ export const headers = {
         'COMPAÑIA',
         'ID PEDIDO',
         'FECHA PEDIDO'
+    ],
+    cities: [
+        'ID',
+        'NOMBRE',
+        'PUNTOS GEOGRAFICOS'
     ]
 }
 
@@ -325,6 +330,23 @@ export const formFields = {
             'options': 'cities',
             'name': 'city'
         }
+    ],
+    cities: [
+        {
+            'label': 'Nombre',
+            'type': 'text',
+            'name': 'name'
+        },
+        {
+            'label': 'Mapa',
+            'type': 'map',
+        },
+        {
+            'label': 'Puntos geograficos',
+            'type': 'text',
+            'name': 'points',
+            'disabled': 'disabled'
+        }
     ]
 }
 
@@ -339,7 +361,8 @@ export const partialsTitle = {
     shipments: "Compañias de envio / Envios",
     comments: "Usuarios / Comentarios",
     users: "Usuarios / Lista de usuarios",
-    earnings: "Ingresos"
+    earnings: "Ingresos",
+    cities: "Ciudades"
 }
 
 export const editable = [
@@ -348,5 +371,6 @@ export const editable = [
     'lot',
     'depot',
     'users',
-    'companies'
+    'companies',
+    'cities'
 ]

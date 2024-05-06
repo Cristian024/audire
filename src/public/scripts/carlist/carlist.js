@@ -11,10 +11,15 @@ var carProducts;
 /* INFORMATION */
 
 var form_description;
+var subtotalCar;
 
 var section;
 var sections
 var status_list;
+var map_div;
+var map;
+var userPos;
+var geoPoints = [];
 
 /* PAYMENT */
 
@@ -59,17 +64,17 @@ export default async () => {
 
 const toggleSection = (pos) => {
     status_list[pos].classList.add('active');
-    
-    status_list[0].addEventListener('click', () =>{
+
+    status_list[0].addEventListener('click', () => {
         window.location = '../carlist/list';
     })
-    status_list[1].addEventListener('click', ()=>{
+    status_list[1].addEventListener('click', () => {
         window.location = '../carlist/information';
     })
-    status_list[2].addEventListener('click', ()=>{
+    status_list[2].addEventListener('click', () => {
         window.location = '../carlist/payment';
     })
-    status_list[3].addEventListener('click', () =>{
+    status_list[3].addEventListener('click', () => {
         window.location = '../carlist/confirmation';
     })
 
@@ -259,7 +264,7 @@ const init_list = async () => {
             total.textContent = `$${price}`;
         },
         function (error) {
-            
+
         }
     )
 
@@ -296,7 +301,6 @@ const init_list = async () => {
 
     }
 
-
     const backToProducts = () => {
         window.location = '../products';
     }
@@ -305,7 +309,182 @@ const init_list = async () => {
     exit.addEventListener('click', backToProducts);
 }
 
-const init_information = () => {
+var mapConfig = {
+    latitude: 3.3984486,
+    longitude: -73.5723,
+    zoom: 3
+}
+const init_information = async () => {
+    map_div = document.querySelector('.map');
+    subtotalCar = document.querySelector('.subtotal-car');
+
+    const drawPolygon = (points, id) => {
+        console.log([points, id]);
+        map.addSource(id, {
+            'type': 'geojson',
+            'data': {
+                'type': 'FeatureCollection',
+                "features": [{
+                    "type": "Feature",
+                    'geometry': {
+                        'type': 'Polygon',
+                        'coordinates': [
+                            points
+                        ]
+                    },
+                    'properties': {
+                    }
+                }]
+            }
+        })
+
+        map.addLayer({
+            'id': `polygon_${id}`,
+            'type': 'fill',
+            'source': id,
+            'layout': {},
+            'paint': {
+                'fill-color': '#FFAA01',
+                'fill-opacity': 0.5
+            }
+        })
+    }
+
+    const initMap = async () => {
+        maptilersdk.config.apiKey = 'cILWEoKejn0Dv5sjODMS';
+
+        map = await new maptilersdk.Map({
+            container: map_div, // container's id or the HTML element to render the map
+            style: maptilersdk.MapStyle.STREETS,
+            center: [mapConfig.longitude, mapConfig.latitude], // starting position [lng, lat]
+            zoom: mapConfig.zoom, // starting zoom
+        });
+
+        userPos = new maptilersdk.Marker({
+            draggable: true,
+            color: "#FFFFFF"
+        })
+            .setLngLat([mapConfig.longitude, mapConfig.latitude])
+            .addTo(map)
+
+        userPos.on('dragend', function (e) {
+            const lngLat = userPos.getLngLat();
+            hasCoverage(lngLat).then(
+                function (value) {
+                    notificationConfig.text = `Tiene cobertura en la ciudad de ${value.name}`;
+                    notificationConfig.background = 'green';
+                    showMessagePopup(notificationConfig);
+                },
+                function (error) {
+                    notificationConfig.text = error.reason;
+                    notificationConfig.background = 'red';
+                    showMessagePopup(notificationConfig);
+                }
+            )
+        });
+
+        map.on('load', async function () {
+            await API.executeConsult(null, 'cities').then(
+                function (value) {
+                    value.forEach(element => {
+                        var points = element.points;
+                        var id = element.id;
+                        var name = element.name;
+                        if (points != null && points != "") {
+                            points = JSON.parse(points);
+                            geoPoints.push({
+                                id: id,
+                                name: name,
+                                points: points
+                            });
+                            drawPolygon(points, `geoPoint_${id}_`);
+                        }
+                    });
+                },
+                function (error) {
+                    notificationConfig.text = "Error al cargar los puntos geograficos";
+                    notificationConfig.background = "red";
+                    showMessagePopup(notificationConfig);
+                }
+            )
+        })
+    }
+
+    const hasCoverage = (point) => {
+        return new Promise(function (resolve, reject) {
+            if (geoPoints.length == 0) {
+                reject({ reason: 'No hay servicio de entrega disponible', hasCities: false });
+            } else {
+                var coverage;
+                var inside = false;
+                geoPoints.forEach(element => {
+                    const geoPoint = element.points
+                    var x = point.lng;
+                    var y = point.lat;
+                    for (var i = 0, j = geoPoint.length - 1; i < geoPoint.length; j = i++) {
+                        var xi = geoPoint[i][0];
+                        var yi = geoPoint[i][1];
+                        var xj = geoPoint[j][0];
+                        var yj = geoPoint[j][1];
+                        var intersect = ((yi > y) != (yj > y)) &&
+                            (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+                        if (intersect){
+                            inside = true;
+                            coverage = {
+                                'id': element.id,
+                                'name': element.name
+                            }
+                        }
+                    }
+                });
+
+                if(inside){
+                    resolve(coverage);
+                }else{
+                    reject({reason: 'No tiene covertura'})
+                }
+            }
+        })
+    }
+
+    const initOrder = async () => {
+        await initMap();
+
+        await CONTROLLER.getUserData().then(
+            function (value) {
+                const latitude = value.latitude;
+                const longitude = value.longitude;
+                const city = value.city
+
+                if ((latitude !== null && latitude !== "0" && latitude !== 0) &&
+                    (longitude !== null && longitude !== "0" && longitude !== 0) &&
+                    (city !== null)) {
+                    mapConfig.latitude = latitude;
+                    mapConfig.longitude = longitude;
+                    mapConfig.zoom = 10;
+                }
+            },
+            function (error) {
+                notificationConfig.text = error.reason;
+                notificationConfig.background = 'red';
+                showMessagePopup(notificationConfig);
+            }
+        )
+
+        await CONTROLLER.getOrder().then(
+            function (value) {
+                subtotalCar.textContent = value.subTotal;
+            },
+            function (error) {
+                notificationConfig.text = error.reason;
+                notificationConfig.background = 'red';
+                showMessagePopup(notificationConfig);
+            }
+        )
+    }
+
+    initOrder();
+
     const nextStep = (e) => {
         window.location = '../carlist/payment'
     }

@@ -1,7 +1,8 @@
 import { Gradient } from '../dependencies/Gradient.js'
 import { loadPage } from '../script.js'
 import { showMessagePopup } from '../dependencies/notification.js'
-import * as API from '../dependencies/apiMethods.js'
+import * as API from '../dependencies/apiMethods.js';
+import * as CACONTROLLER from '../carlist/carlistController.js';
 
 var notificationConfig = {
     "text": null,
@@ -86,11 +87,12 @@ const loginUser = async (data) => {
                 const dataPost = {
                     email: data.email,
                     password: data.password,
-                    role: value
+                    role: value.role,
+                    userId: value.userId
                 }
-                
-                const response = await fetch('../login',{
-                    method:'POST',
+
+                const response = await fetch('../login', {
+                    method: 'POST',
                     headers: {
                         'Content-Type': 'application/json; charset=utf-8'
                     },
@@ -102,7 +104,14 @@ const loginUser = async (data) => {
                     return JSON.parse(res);
                 })
 
-                window.location = data_response.url;
+                CACONTROLLER.setUserData(value.userId)
+                    .then(function (value) {
+                        window.location = data_response.url;
+                    }, function (error) {
+                        notificationConfig.background = "red";
+                        notificationConfig.text = error.reason;
+                        showMessagePopup(notificationConfig);
+                    })
             },
             function (error) {
                 notificationConfig.background = "red";

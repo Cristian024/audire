@@ -53,10 +53,6 @@ export const init = async (route) => {
 
     if (isEditable) await insertFields(route);
     if (!isEditable) addEntityButton.remove();
-
-    document.querySelectorAll('.title').forEach(element => {
-        console.log(element.innerText);
-    })
 }
 
 const functionsDashboard = () => {
@@ -144,10 +140,13 @@ const insertData = async (data) => {
 
 const insertFields = async (route) => {
     const fields = formFields[route] || null;
+    var haveMap = false;
+
     var inner = ""
     if (fields == null) {
         return
     }
+
     await Promise.all(fields.map(async (fieldArray) => {
         const type = fieldArray.type;
         const name = fieldArray.name;
@@ -155,6 +154,7 @@ const insertFields = async (route) => {
         const accept = fieldArray.accept || null;
         const options = fieldArray.options || null;
         const route = fieldArray.route || null;
+        const disabled = fieldArray.disabled || '';
 
         if (type == 'textarea') {
             inner += `<label for="${name}">
@@ -164,12 +164,12 @@ const insertFields = async (route) => {
         } else if (type == 'text' || type == 'password' || type == 'date') {
             inner += `<label for="${name}">
             ${label}
-            <input type="${type}" name="${name}" class="field" required>
+            <input type="${type}" name="${name}" class="field ${name}" required ${disabled}>
             </label>`;
         } else if (type == 'number') {
             inner += `<label for="${name}">
             ${label}
-            <input type="${type}" name="${name}" class="field" step="any" required>
+            <input type="${type}" name="${name}" class="field ${name}" step="any" required ${disabled}>
             </label>`;
         } else if (type == 'file') {
             inner += `<label for="${name}">
@@ -185,13 +185,110 @@ const insertFields = async (route) => {
                 ${optionsForm}
             </select>
             </label>`;
+        } else if (type == 'map') {
+            haveMap = true;
+            inner += `<label>
+            Mapa
+            </label>
+            <div class="field map" name="points"></div>`
         }
     }));
 
     inner += '<input id="form-entity-submit" name="submit" type="submit" style="display:none;">';
 
     formEntity.innerHTML = inner
+    if (haveMap) await initMap(formEntity);
     setListenersFields();
+}
+
+var mapConfig = {
+    latitude: 3.3984486,
+    longitude: -73.5723,
+    zoom: 3
+}
+
+var map;
+var pointsGeographic = null;
+var draw;
+
+const initMap = async (form) => {
+    maptilersdk.config.apiKey = 'cILWEoKejn0Dv5sjODMS';
+    const mapDiv = form.querySelector('.map');
+
+    map = await new maptilersdk.Map({
+        container: mapDiv, // container's id or the HTML element to render the map
+        style: maptilersdk.MapStyle.STREETS,
+        center: [mapConfig.longitude, mapConfig.latitude], // starting position [lng, lat]
+        zoom: mapConfig.zoom, // starting zoom
+    });
+    
+    draw = new MapboxDraw({
+        displayControlsDefault: false,
+        controls: {
+            polygon: true,
+            trash: true
+        }
+    });
+    map.addControl(draw);
+
+    const drawControls = document.querySelectorAll(".mapboxgl-ctrl-group.mapboxgl-ctrl");
+    drawControls.forEach((elem) => {
+        elem.classList.add('maplibregl-ctrl', 'maplibregl-ctrl-group');
+    });
+
+    map.on('draw.create', updateArea);
+    map.on('draw.delete', updateArea);
+    map.on('draw.update', updateArea);
+
+    function updateArea(e) {
+        var data = draw.getAll();
+        pointsGeographic = data.features[0].geometry.coordinates[0];
+        form.querySelector(`.points`).value = JSON.stringify(pointsGeographic);
+    }
+}
+
+var polygons;
+
+const drawPolygon = (points) => {
+    emptyMap()
+
+    polygons = map.addSource('source', {
+        'type': 'geojson',
+        'data': {
+            'type': 'FeatureCollection',
+            "features": [{
+                "type": "Feature",
+                'geometry': {
+                    'type': 'Polygon',
+                    'coordinates': [
+                        points
+                    ]
+                },
+                'properties': {
+                }
+            }]
+        }
+    })
+
+    map.addLayer({
+        'id': 'polygons',
+        'type': 'fill',
+        'source': 'source',
+        'layout': {},
+        'paint': {
+            'fill-color': '#FFAA01',
+            'fill-opacity': 0.5
+        }
+    })
+}
+
+const emptyMap = () => {
+    draw.deleteAll();
+    if(polygons != null){
+        map.removeLayer('polygons')
+        map.removeSource('source');
+        polygons = null;
+    }
 }
 
 var dataTable;
@@ -312,7 +409,8 @@ const insertDataFormUpdate = (id) => {
 
             fields.forEach(element => {
                 const name = element.getAttribute('name');
-                const type = element.getAttribute('type')
+                const type = element.getAttribute('type');
+                const subClas = element.classList[1];
                 for (var key in data) {
                     if (key == name) {
                         if (type == "file") {
@@ -322,13 +420,18 @@ const insertDataFormUpdate = (id) => {
                                 element.value = data[key];
                             } else {
                                 const options = element.querySelectorAll('option')
-                                console.log(options);
-                                console.log(`Key: ${key} Value: ${data[key]}`);
                                 options.forEach(option => {
                                     if (option.textContent == data[key]) {
                                         element.value = option.value
                                     }
                                 });
+                            }
+                        } else if (subClas == "map") {
+                            if (data['points'] != null && data['points'] != "") {
+                                const points = JSON.parse(data['points']);
+                                drawPolygon(points);
+                            } else {
+                                emptyMap();
                             }
                         } else {
                             element.value = data[key];
@@ -357,30 +460,45 @@ const executeAction = (e) => {
 
     var loaded = false;
     var countFiles = false;
+
+    var haveMap = false;
+    var countPoints = false;
+
     const method = form.getAttribute('method')
     const id = form.getAttribute('id-entity') || null
 
     var elements = form.elements;
 
+    console.log(elements);
+
     var data = '{'
 
     for (var i = 0; i < elements.length; i++) {
-        const name = elements[i].name;
+        const name = elements[i].name || null;
         const value = elements[i].value;
         const type = elements[i].getAttribute('type');
 
-        if (type == "file") {
-            const url = elements[i].getAttribute('url');
+        if (name != null) {
+            if (type == "file") {
+                const url = elements[i].getAttribute('url');
 
-            countFiles = true;
+                countFiles = true;
 
-            if (url !== null) {
-                loaded = true;
-            }
-            data += `"${name}": "${url}",`;
-        } else {
-            if (name !== "submit") {
-                data += `"${name}": "${value}",`
+                if (url !== null) {
+                    loaded = true;
+                }
+                data += `"${name}": "${url}",`;
+            } else if (name == "points") {
+                haveMap = true;
+
+                if (pointsGeographic != null) {
+                    countPoints = true;
+                }
+                data += `"${name}": "${JSON.stringify(pointsGeographic)}",`
+            } else {
+                if (name !== "submit") {
+                    data += `"${name}": "${value}",`
+                }
             }
         }
     }
@@ -388,6 +506,8 @@ const executeAction = (e) => {
     data = data.substring(0, data.length - 1);
 
     data += "}"
+
+    console.log(data);
 
     if (countFiles) {
         if (loaded) {
@@ -397,7 +517,16 @@ const executeAction = (e) => {
             notificationConfig.text = "El archivo se está cargando";
             showMessagePopup(notificationConfig);
         }
-    } else {
+    } else if (haveMap) {
+        if (countPoints) {
+            routerMethods(method, data, id);
+        } else {
+            notificationConfig.background = "red";
+            notificationConfig.text = "Especifica las coordenadas";
+            showMessagePopup(notificationConfig);
+        }
+    }
+    else {
         routerMethods(method, data, id);
     }
 }
@@ -440,6 +569,10 @@ const emptyFields = () => {
     progressBars.forEach(element => {
         element.value = "0"
     });
+
+    if(draw != null){
+        emptyMap();
+    }
 }
 
 const uploadFile = async (reference, file, input, progress) => {

@@ -28,6 +28,25 @@ var orderDetail = {
     orderId: null
 };
 
+var userData = {
+    id: null,
+    name: null,
+    email: null,
+    password: null,
+    direction: null,
+    documentType: null,
+    document: null,
+    cellphone: null,
+    registerDate: null,
+    lastBuyDate: null,
+    lastVisitDate: null,
+    latitude: null,
+    longitude: null,
+    role: null,
+    state: null,
+    city: null
+}
+
 var orderDetails = [];
 
 export const emptyOrder = () => {
@@ -52,10 +71,18 @@ export const getOrder = () => {
             var formatedDay = year + '/' + month.toString().padStart(2, '0') + '/' + day.toString().padStart(2, '0');
             orderObject.orderDate = formatedDay;
             */
-            storage.setItem('orderDetails', JSON.stringify([]));
-            storage.setItem('order', JSON.stringify(orderObject));
-            orderObject = JSON.parse(storage.getItem('order'));
-            resolve(orderObject);
+            getUserData().then(
+                function (value) {
+                    orderObject.user = value.id;
+                    storage.setItem('orderDetails', JSON.stringify([]));
+                    storage.setItem('order', JSON.stringify(orderObject));
+                    orderObject = JSON.parse(storage.getItem('order'));
+                    resolve(orderObject);
+                },
+                function (error) {
+                    reject({reason: 'No se pudo crear la orden'})
+                }
+            )
         } else {
             orderObject = JSON.parse(storage.getItem('order'));
             resolve(orderObject);
@@ -63,14 +90,14 @@ export const getOrder = () => {
     })
 }
 
-export const updateOrder = () =>{
-    return new Promise(function(resolve, reject){
+export const updateOrder = () => {
+    return new Promise(function (resolve, reject) {
         getOrder().then(
-            function(value){
+            function (value) {
                 const order = value;
                 getOrderDetails().then(
-                    function(value){
-                        var total = 0; 
+                    function (value) {
+                        var total = 0;
                         value.forEach(element => {
                             const subtotal = parseInt(element.totalPrice);
                             total = total + subtotal;
@@ -78,17 +105,17 @@ export const updateOrder = () =>{
 
                         order.subTotal = total;
                         storage.setItem('order', JSON.stringify(order));
-                        resolve({message: 'Orden actualizada', subtotal: total});
+                        resolve({ message: 'Orden actualizada', subtotal: total });
                     },
-                    function(error){
+                    function (error) {
                         order.subTotal = 0;
                         storage.setItem('order', JSON.stringify(order));
-                        resolve({message: 'Orden actualizada', subtotal: 0});
+                        resolve({ message: 'Orden actualizada', subtotal: 0 });
                     }
                 )
             },
-            function(error){
-                reject({reason: 'No se pudo actualizar la orden'});
+            function (error) {
+                reject({ reason: 'No se pudo actualizar la orden' });
             }
         )
     })
@@ -98,51 +125,51 @@ export const addOrderDetail = async (data) => {
     return new Promise(async function (resolve, reject) {
         orderDetails = JSON.parse(storage.getItem('orderDetails'));
         API.executeConsult(data.id, 'products')
-        .then(
-            function(value){
-                const product = value[0];
-                const order = orderDetail;
+            .then(
+                function (value) {
+                    const product = value[0];
+                    const order = orderDetail;
 
-                const price = parseInt(product.price);
+                    const price = parseInt(product.price);
 
-                order.orderId = null;
-                order.product = product.id;
-                order.quantity = data.quantity;
-                order.totalPrice = price * data.quantity;
+                    order.orderId = null;
+                    order.product = product.id;
+                    order.quantity = data.quantity;
+                    order.totalPrice = price * data.quantity;
 
-                if(orderDetails.length > 0){
-                    var exits = false;
-                    orderDetails.forEach(element => {
-                        if(element.product == order.product){
-                            exits = true;
-                            reject({reason: 'El producto ya está añadido'})
-                            return;
-                        }
-                    });
+                    if (orderDetails.length > 0) {
+                        var exits = false;
+                        orderDetails.forEach(element => {
+                            if (element.product == order.product) {
+                                exits = true;
+                                reject({ reason: 'El producto ya está añadido' })
+                                return;
+                            }
+                        });
 
-                    if(!exits) orderDetails.push(order);
-                }else{
-                    orderDetails.push(order);
+                        if (!exits) orderDetails.push(order);
+                    } else {
+                        orderDetails.push(order);
+                    }
+
+                    storage.setItem('orderDetails', JSON.stringify(orderDetails));
+                    resolve()
+                },
+                function (error) {
+                    reject()
                 }
-
-                storage.setItem('orderDetails', JSON.stringify(orderDetails));
-                resolve()
-            },
-            function(error){
-                reject()
-            }
-        )
+            )
     })
 }
 
-export const deleteOrderDetail = (productId) =>{
-    return new Promise(function(resolve, reject){
+export const deleteOrderDetail = (productId) => {
+    return new Promise(function (resolve, reject) {
         getOrderDetails().then(
-            function(value){
-                
+            function (value) {
+
                 var exists = false;
-                value.forEach(function(element, index) {
-                    if (element.product == productId){
+                value.forEach(function (element, index) {
+                    if (element.product == productId) {
                         exists = true;
 
                         value.splice(index, 1);
@@ -152,38 +179,38 @@ export const deleteOrderDetail = (productId) =>{
                     }
                 });
 
-                if(exists) resolve({message: 'Producto eliminado con exito'}) ?? reject({reason: 'No se pudo eliminar el producto'});
+                if (exists) resolve({ message: 'Producto eliminado con exito' }) ?? reject({ reason: 'No se pudo eliminar el producto' });
             },
-            function(error){
-                reject({reason: 'No se pudo eliminar el producto'})
+            function (error) {
+                reject({ reason: 'No se pudo eliminar el producto' })
             }
         )
     })
 }
 
-export const getOrderDetails = async () =>{
-    return new Promise(function(resolve, reject){
+export const getOrderDetails = async () => {
+    return new Promise(function (resolve, reject) {
         orderDetails = JSON.parse(storage.getItem('orderDetails'));
 
-        if(orderDetails == null || orderDetails.length == 0){
-            reject({reason: 'No hay productos añadidos al carrito'})
-        }else{
+        if (orderDetails == null || orderDetails.length == 0) {
+            reject({ reason: 'No hay productos añadidos al carrito' })
+        } else {
             resolve(orderDetails);
         }
     })
 }
 
-export const updateOrderDetail = async (productId, price, quantity) =>{
-    return new Promise(function(resolve,reject){
+export const updateOrderDetail = async (productId, price, quantity) => {
+    return new Promise(function (resolve, reject) {
         getOrderDetails().then(
-            function(value){    
+            function (value) {
                 var exists = false;
                 var priceReturn;
-                value.forEach(function(element, index) {
-                    if (element.product == productId){
+                value.forEach(function (element, index) {
+                    if (element.product == productId) {
                         exists = true;
 
-                        element.totalPrice = price*quantity;
+                        element.totalPrice = price * quantity;
                         element.quantity = quantity;
 
                         priceReturn = element.totalPrice;
@@ -193,11 +220,38 @@ export const updateOrderDetail = async (productId, price, quantity) =>{
                     }
                 });
 
-                if(exists) resolve({message: 'Producto actualizado con exito', price: priceReturn}) ?? reject({reason: 'No se pudo actualizar el producto'});
+                if (exists) resolve({ message: 'Producto actualizado con exito', price: priceReturn }) ?? reject({ reason: 'No se pudo actualizar el producto' });
             },
-            function(error){
-                reject({reason: 'No se pudo actualizar el producto'});
+            function (error) {
+                reject({ reason: 'No se pudo actualizar el producto' });
             }
         )
+    })
+}
+
+export const setUserData = async (id) => {
+    return new Promise(function (resolve, reject) {
+        API.executeConsult(id, 'users').then(
+            function (value) {
+                userData = value[0];
+                storage.setItem('userData', JSON.stringify(userData));
+                resolve();
+            },
+            function (error) {
+                reject({ reason: 'No se encontraron las credenciales' });
+            }
+        )
+    })
+}
+
+export const getUserData = async () => {
+    return new Promise(function (resolve, reject) {
+        const userInfo = JSON.parse(storage.getItem('userData')) || null;
+
+        if (userInfo != null) {
+            resolve(userInfo);
+        } else {
+            reject({ reason: 'No se pudo obtener la información del usuario' });
+        }
     })
 }

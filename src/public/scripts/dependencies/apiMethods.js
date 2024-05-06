@@ -142,10 +142,10 @@ export const consultLogin = async (data) => {
 
             switch (data_response.status) {
                 case 204:
-                    resolve(data_response.status);
+                    resolve({role: data_response.status, userId: data_response.userId});
                     break;
                 case 205:
-                    resolve(data_response.status);
+                    resolve({role: data_response.status, userId: data_response.userId});
                     break;
                 case 202:
                     reject({ message: 'El usuario no existe' });

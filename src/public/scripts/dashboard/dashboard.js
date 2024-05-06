@@ -78,7 +78,7 @@ const functionsDashboard = () => {
     toggle.onclick = function () {
         navigation.classList.toggle("active");
         main.classList.toggle("active");
-    };
+    }; 
 
     window.addEventListener('pageshow', async (e) =>{
         if(e.persisted){

@@ -8,6 +8,8 @@
   <%- include('./partials/head.html') %>
   <link rel="stylesheet" href="../css/dashboard.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css" />
+  <link href="https://cdn.maptiler.com/maptiler-sdk-js/v2.0.3/maptiler-sdk.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.2.0/mapbox-gl-draw.css">
 </head>
 
 <body class="<%= pagina %> <%= partial %>">
@@ -300,6 +302,9 @@
   <!-- ======================= Cards ================== -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.js" defer></script>
   <script src="https://cdn.datatables.net/2.0.3/js/dataTables.js" defer></script>
+  <script src="https://cdn.maptiler.com/maptiler-sdk-js/v2.0.3/maptiler-sdk.umd.js" defer></script>
+  <script src="https://api.tiles.mapbox.com/mapbox.js/plugins/turf/v3.0.11/turf.min.js" defer></script>
+  <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.2.0/mapbox-gl-draw.js" defer></script>
   <%- include('./partials/footer.html') %>
 
 </body>

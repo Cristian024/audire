@@ -16,11 +16,13 @@ router.get('/login', (req, res) => {
 
 router.post('/login', (req, res) => {
     let userName = req.body.email;
-    let userRole = req.body.role
+    let userRole = req.body.role;
+    let userId = req.body.userId;
 
     req.session.loggedin = true;
     req.session.username = userName;
     req.session.role = userRole;
+    req.session.userId = userId;
 
     if (userRole == 204) {
         res.send({ url: '../products' });

@@ -1,31 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cart</title>
-    <%- include('./partials/head.html') %>
-    <link rel="stylesheet" href="../css/carlist.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cart</title>
+  <%- include('./partials/head.html') %>
+  <link rel="stylesheet" href="../css/carlist.css">
+  <link href="https://cdn.maptiler.com/maptiler-sdk-js/v2.0.3/maptiler-sdk.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.2.0/mapbox-gl-draw.css">
 </head>
+
 <body class="<%= pagina %> <%= section %>">
-    <%- include('./partials/loader.html') %>
+  <%- include('./partials/loader.html') %>
 
-    <%- include('./partials/nav.html')  %>
+  <%- include('./partials/nav.html')  %>
 
-    <h1 class="satoshi">Carrito</h1>
+  <h1 class="satoshi">Carrito</h1>
 
-    <%- include('./partials/carlist/list-container.html') %>
+  <%- include('./partials/carlist/list-container.html') %>
 
-    <%- include('./partials/carlist/information-container.html') %>
+  <%- include('./partials/carlist/information-container.html') %>
 
-    <%- include('./partials/carlist/payment-container.html') %>
+  <%- include('./partials/carlist/payment-container.html') %>
 
-    <%- include('./partials/carlist/confirmation-container.html') %>
+  <%- include('./partials/carlist/confirmation-container.html') %>
 
-    <%- include('./partials/carlist/lineCarlist.html') %>
+  <%- include('./partials/carlist/lineCarlist.html') %>
 
-    
 
-    <%- include('./partials/footer.html') %>
+  <script src="https://cdn.maptiler.com/maptiler-sdk-js/v2.0.3/maptiler-sdk.umd.js" defer></script>
+  <script src="https://api.tiles.mapbox.com/mapbox.js/plugins/turf/v3.0.11/turf.min.js" defer></script>
+  <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.2.0/mapbox-gl-draw.js" defer></script>
+  <%- include('./partials/footer.html') %>
 </body>
+
 </html>

@@ -52,14 +52,18 @@ router.get('/earnings', (req, res) =>{
     render(res, 'EARNINGS', req);
 })
 
+router.get('/cities', (req, res) =>{
+    render(res, 'CITIES', req)
+})
+
 const render = (res, partial, req) => {
     const loggedin = req.session.loggedin;
     const role = req.session.role;
 
     if(loggedin && role === 205){
-        res.render('dashboard.html', { pagina: 'DASHBOARD', partial: partial })
+        res.render('dashboard.html', { pagina: 'DASHBOARD', partial: partial });
     }else{
-        res.redirect('../')
+        res.redirect('../');
     }
 }
 
