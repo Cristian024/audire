@@ -20,6 +20,9 @@ var map_div;
 var map;
 var userPos;
 var geoPoints = [];
+var shippingPrice;
+var totalPrice;
+var order;
 
 /* PAYMENT */
 
@@ -317,6 +320,8 @@ var mapConfig = {
 const init_information = async () => {
     map_div = document.querySelector('.map');
     subtotalCar = document.querySelector('.subtotal-car');
+    shippingPrice = document.querySelector('.shippingPrice');
+    totalPrice = document.querySelector('.total-car');
 
     const drawPolygon = (points, id) => {
         console.log([points, id]);
@@ -354,33 +359,10 @@ const init_information = async () => {
         maptilersdk.config.apiKey = 'cILWEoKejn0Dv5sjODMS';
 
         map = await new maptilersdk.Map({
-            container: map_div, // container's id or the HTML element to render the map
+            container: map_div,
             style: maptilersdk.MapStyle.STREETS,
             center: [mapConfig.longitude, mapConfig.latitude], // starting position [lng, lat]
-            zoom: mapConfig.zoom, // starting zoom
-        });
-
-        userPos = new maptilersdk.Marker({
-            draggable: true,
-            color: "#FFFFFF"
-        })
-            .setLngLat([mapConfig.longitude, mapConfig.latitude])
-            .addTo(map)
-
-        userPos.on('dragend', function (e) {
-            const lngLat = userPos.getLngLat();
-            hasCoverage(lngLat).then(
-                function (value) {
-                    notificationConfig.text = `Tiene cobertura en la ciudad de ${value.name}`;
-                    notificationConfig.background = 'green';
-                    showMessagePopup(notificationConfig);
-                },
-                function (error) {
-                    notificationConfig.text = error.reason;
-                    notificationConfig.background = 'red';
-                    showMessagePopup(notificationConfig);
-                }
-            )
+            zoom: mapConfig.zoom,
         });
 
         map.on('load', async function () {
@@ -410,46 +392,44 @@ const init_information = async () => {
         })
     }
 
-    const hasCoverage = (point) => {
-        return new Promise(function (resolve, reject) {
-            if (geoPoints.length == 0) {
-                reject({ reason: 'No hay servicio de entrega disponible', hasCities: false });
-            } else {
-                var coverage;
-                var inside = false;
-                geoPoints.forEach(element => {
-                    const geoPoint = element.points
-                    var x = point.lng;
-                    var y = point.lat;
-                    for (var i = 0, j = geoPoint.length - 1; i < geoPoint.length; j = i++) {
-                        var xi = geoPoint[i][0];
-                        var yi = geoPoint[i][1];
-                        var xj = geoPoint[j][0];
-                        var yj = geoPoint[j][1];
-                        var intersect = ((yi > y) != (yj > y)) &&
-                            (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-                        if (intersect){
-                            inside = true;
-                            coverage = {
-                                'id': element.id,
-                                'name': element.name
-                            }
-                        }
-                    }
-                });
-
-                if(inside){
-                    resolve(coverage);
-                }else{
-                    reject({reason: 'No tiene covertura'})
-                }
-            }
+    const initUserPos = (config) => {
+        userPos = new maptilersdk.Marker({
+            draggable: true,
+            color: "#FFFFFF"
         })
+            .setLngLat([config.longitude, config.latitude])
+            .addTo(map)
+
+        userPos.on('dragend', function (e) {
+            const lngLat = userPos.getLngLat();
+            updatePriceOrder(lngLat, geoPoints);
+        });
+    }
+
+    const updatePriceOrder = (userPos, geoPoints) => {
+        CONTROLLER.hasCoverage(userPos, geoPoints).then(
+            function (value) {
+                notificationConfig.text = `Tiene cobertura en la ciudad de ${value.name}`;
+                notificationConfig.background = 'green';
+                showMessagePopup(notificationConfig);
+                shippingPrice.textContent = value.shippingPrice;
+                totalPrice.textContent = value.shippingPrice + order.subTotal;
+            },
+            function (error) {
+                notificationConfig.text = error.reason;
+                notificationConfig.background = 'red';
+                showMessagePopup(notificationConfig);
+            }
+        )
     }
 
     const initOrder = async () => {
         await initMap();
 
+        var userPosition = {
+            longitude: mapConfig.longitude,
+            latitude: mapConfig.latitude
+        };
         await CONTROLLER.getUserData().then(
             function (value) {
                 const latitude = value.latitude;
@@ -462,6 +442,9 @@ const init_information = async () => {
                     mapConfig.latitude = latitude;
                     mapConfig.longitude = longitude;
                     mapConfig.zoom = 10;
+
+                    userPosition.latitude = latitude;
+                    userPosition.longitude = longitude;
                 }
             },
             function (error) {
@@ -469,11 +452,15 @@ const init_information = async () => {
                 notificationConfig.background = 'red';
                 showMessagePopup(notificationConfig);
             }
-        )
+        ).finally(function () {
+            initUserPos(userPosition)
+        })
 
         await CONTROLLER.getOrder().then(
             function (value) {
+                order = value;
                 subtotalCar.textContent = value.subTotal;
+                totalPrice.textContent = value.subTotal;
             },
             function (error) {
                 notificationConfig.text = error.reason;

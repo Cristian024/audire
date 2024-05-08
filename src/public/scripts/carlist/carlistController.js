@@ -80,7 +80,7 @@ export const getOrder = () => {
                     resolve(orderObject);
                 },
                 function (error) {
-                    reject({reason: 'No se pudo crear la orden'})
+                    reject({ reason: 'No se pudo crear la orden' });
                 }
             )
         } else {
@@ -142,7 +142,7 @@ export const addOrderDetail = async (data) => {
                         orderDetails.forEach(element => {
                             if (element.product == order.product) {
                                 exits = true;
-                                reject({ reason: 'El producto ya está añadido' })
+                                reject({ reason: 'El producto ya está añadido' });
                                 return;
                             }
                         });
@@ -182,7 +182,7 @@ export const deleteOrderDetail = (productId) => {
                 if (exists) resolve({ message: 'Producto eliminado con exito' }) ?? reject({ reason: 'No se pudo eliminar el producto' });
             },
             function (error) {
-                reject({ reason: 'No se pudo eliminar el producto' })
+                reject({ reason: 'No se pudo eliminar el producto' });
             }
         )
     })
@@ -193,7 +193,7 @@ export const getOrderDetails = async () => {
         orderDetails = JSON.parse(storage.getItem('orderDetails'));
 
         if (orderDetails == null || orderDetails.length == 0) {
-            reject({ reason: 'No hay productos añadidos al carrito' })
+            reject({ reason: 'No hay productos añadidos al carrito' });
         } else {
             resolve(orderDetails);
         }
@@ -252,6 +252,111 @@ export const getUserData = async () => {
             resolve(userInfo);
         } else {
             reject({ reason: 'No se pudo obtener la información del usuario' });
+        }
+    })
+}
+
+export const hasCoverage = (point, geoPoints) => {
+    return new Promise(function (resolve, reject) {
+        if (geoPoints.length == 0) {
+            reject({ reason: 'No hay servicio de entrega disponible', hasCities: false });
+        } else {
+            var coverage;
+            var inside = false;
+            geoPoints.forEach(element => {
+                const geoPoint = element.points
+                var x = point.lng;
+                var y = point.lat;
+                for (var i = 0, j = geoPoint.length - 1; i < geoPoint.length; j = i++) {
+                    var xi = geoPoint[i][0];
+                    var yi = geoPoint[i][1];
+                    var xj = geoPoint[j][0];
+                    var yj = geoPoint[j][1];
+                    var intersect = ((yi > y) != (yj > y)) &&
+                        (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+                    if (intersect) {
+                        inside = true;
+                        coverage = {
+                            'id': element.id,
+                            'name': element.name,
+                            'shippingPrice': 0
+                        }
+                    }
+                }
+            });
+
+            if (inside) {
+                resolve(coverage);
+            } else {
+                getShippingPrice(point, geoPoints).then(
+                    function (value) {
+                        resolve(value)
+                    },
+                    function (error) {
+                        reject(error);
+                    }
+                )
+            }
+        }
+    })
+}
+
+const getShippingPrice = (point, geoPoints) => {
+    return new Promise(function (resolve, reject) {
+        var zones = [];
+        geoPoints.forEach(zone => {
+            var middlePointLat = 0;
+            var middlePointLon = 0;
+            zone.points.forEach(element => {
+                middlePointLon += element[0];
+                middlePointLat += element[1];
+            });
+
+            middlePointLat = middlePointLat / zone.points.length;
+            middlePointLon = middlePointLon / zone.points.length;
+            zones.push({
+                'id': zone.id,
+                'name': zone.name,
+                'middlePointLat': middlePointLat,
+                'middlePointLon': middlePointLon
+            })
+        });
+
+        if (zones.length == 0) {
+            reject({ reason: 'No hay covertura en ninguna ciudad' })
+        } else {
+            var zoneCoverture;
+            var coverage;
+            var distances = [];
+
+            var posLon = point.lng;
+            var posLat = point.lat;
+
+            for (let index = 0; index < zones.length; index++) {
+                var zoneLat = zones[index].middlePointLat;
+                var zoneLon = zones[index].middlePointLon;
+
+                var distance = Math.sqrt(Math.pow((posLat - zoneLat), 2) + Math.pow((posLon - zoneLon), 2));
+                distances.push({
+                    'index': index,
+                    'distance': distance
+                })
+            }
+
+            var min = distances[0];
+            distances.forEach(element => {
+                if (element.distance < min.distance) {
+                    min = element;
+                }
+            });
+
+            zoneCoverture = zones[min.index];
+            coverage = {
+                'id': zoneCoverture.id,
+                'name': zoneCoverture.name,
+                'shippingPrice': parseInt((min.distance * 8000))
+            }
+            resolve(coverage)
         }
     })
 }
