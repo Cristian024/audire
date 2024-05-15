@@ -360,3 +360,320 @@ const getShippingPrice = (point, geoPoints) => {
         }
     })
 }
+
+export const updateOrderShipping = async (data) => {
+    return new Promise(async function (resolve, reject) {
+        getOrder().then(
+            function (value) {
+                orderObject = value;
+                if ((data.latitude == "" || data.latitude == null) || (data.longitude == "" || data.longitude == null)) {
+                    reject({ reason: 'Debes indicar tu ubicación actual' });
+                } else {
+                    getSubTotalOrderAndShippingPrice({ lat: data.latitude, lng: data.longitude }, data.geopoints).then(
+                        function (value) {
+                            orderObject.subTotal = value.subTotal;
+                            orderObject.cancelDate = null;
+                            orderObject.cancelReason = null;
+                            orderObject.city = value.city;
+                            orderObject.direction = data.direction;
+                            orderObject.latitude = data.latitude;
+                            orderObject.longitude = data.longitude;
+                            orderObject.orderDate = null;
+                            orderObject.paymentMethod = null;
+                            orderObject.shippingPrice = value.shippingPrice;
+                            orderObject.state = 1;
+                            orderObject.totalPrice = (value.subTotal + value.shippingPrice);
+
+                            API.executeUpdate(JSON.stringify({
+                                'name': data.name,
+                                'email': data.mail,
+                                'cellphone': data.cellphone,
+                                'city': value.city,
+                                'direction': data.direction,
+                                'latitude': orderObject.latitude,
+                                'longitude': orderObject.longitude,
+                                'document': data.identification,
+                                'documentType': data.document_type
+                            }), orderObject.user, 'users').then(
+                                function (value) {
+                                    setUserData(orderObject.user).then(
+                                        function (value) {
+                                            storage.setItem('order', JSON.stringify(orderObject));
+                                            resolve({ message: 'Orden actualizada con exito' });
+                                        },
+                                        function (error) {
+                                            reject({ reason: 'Error al actualizar la información del usuario' })
+                                        }
+                                    )
+                                },
+                                function (error) {
+                                    reject({ reason: 'Error al generar la orden' })
+                                }
+                            )
+                        },
+                        function (error) {
+                            reject({ reason: error.reason });
+                        }
+                    )
+                }
+            },
+            function (error) {
+                reject({ reason: 'No se pudo obtener la orden' });
+            }
+        )
+    })
+}
+
+export const getSubTotalOrderAndShippingPrice = async (point, geopoints) => {
+    return new Promise(function (resolve, reject) {
+        getOrderDetails().then(
+            function (value) {
+                orderDetails = value;
+                var subTotal = 0;
+                orderDetails.forEach(element => {
+                    subTotal += element.totalPrice;
+                });
+                hasCoverage(point, geopoints).then(
+                    function (value) {
+                        resolve({ subTotal: subTotal, shippingPrice: value.shippingPrice, city: value.id });
+                    }, function (error) {
+                        reject({ reason: 'No se pudo determinar la ubicación actual' });
+                    })
+            },
+            function (error) {
+                reject({ reason: 'No se pudo obtener el detalle de la orden' });
+            }
+        )
+    })
+}
+
+export const setPaymentMethod = (data) => {
+    storage.setItem('paymentMethod', JSON.stringify(data));
+}
+
+export const getPaymenthMethod = () => {
+    return new Promise(function (resolve, reject) {
+        const method = storage.getItem('paymentMethod');
+
+        if (method == null) {
+            reject({ reason: 'Debes indicar el metodo de pago' });
+        } else {
+            resolve(JSON.parse(method));
+        }
+    })
+}
+
+export const getAccountPaymenthUser = async () => {
+    return new Promise(function (resolve, reject) {
+        getUserData().then(
+            async function (value) {
+                var nequiAccount = null;
+                var bancolombiaAccount = null;
+
+                await API.executeConsult(value.id, 'nequi_accounts_by_user').then(
+                    function (value) {
+                        if (value.length > 0) {
+                            nequiAccount = value[0];
+                            storage.setItem('nequi', JSON.stringify(nequiAccount));
+                        } else {
+                            storage.removeItem('nequi');
+                        }
+                    }
+                )
+
+                await API.executeConsult(value.id, 'bancolombia_accounts_by_user').then(
+                    function (value) {
+                        if (value.length > 0) {
+                            bancolombiaAccount = value[0];
+                            storage.setItem('bancolombia', JSON.stringify(bancolombiaAccount));
+                        } else {
+                            storage.removeItem('bancolombia');
+                        }
+                    }
+                )
+
+                if (nequiAccount == null && bancolombiaAccount == null) {
+                    resolve(null);
+                } else {
+                    resolve({ nequi: nequiAccount, bancolombia: bancolombiaAccount });
+                }
+            },
+            function (error) {
+                reject({ reason: error.reason })
+            }
+        )
+    })
+}
+
+export const updateOrderPayment = async (fields) => {
+    return new Promise(async function (resolve, reject) {
+        await getPaymenthMethod().then(
+            async function (payment) {
+                await getOrder().then(
+                    function (value) {
+                        orderObject = value;
+                        orderObject.paymentMethod = payment.id;
+                        storage.setItem('order', JSON.stringify(orderObject));
+                    },
+                    function (error) {
+                        reject({ reason: error.reason });
+                        return;
+                    }
+                )
+
+                await getUserData().then(
+                    function (user) {
+                        switch (payment.id) {
+                            case 1:
+                                resolve();
+                                break;
+                            case 2:
+                                modifyAccountBancolombia(fields, user).then(
+                                    function (value) {
+                                        resolve();
+                                    },
+                                    function (error) {
+                                        reject({ reason: error.reason });
+                                    }
+                                )
+                                break;
+                            case 3:
+                                modifyAccountNequi(fields, user).then(
+                                    function (value) {
+                                        resolve();
+                                    },
+                                    function (error) {
+                                        reject({ reason: error.reason })
+                                    }
+                                )
+                                break;
+                        }
+                    },
+                    function (error) {
+                        reject({ reason: error.reason })
+                    }
+                )
+
+            },
+            function (error) {
+                reject({ reason: error.reason });
+            }
+        )
+    })
+}
+
+const modifyAccountNequi = async (fields, user) => {
+    return new Promise(async function (resolve, reject) {
+        var data = {
+            'cellphone': fields['numero_celular'].value,
+            'document': fields['documento_nequi'].value,
+            'email': fields['email'].value,
+            'user': user.id
+        }
+
+        var nequi = storage.getItem('nequi');
+        if (nequi == null) {
+            API.executeInsert(JSON.stringify(data), 'nequi_accounts').then(
+                function (value) {
+                    data.id = value.insertId;
+                    storage.setItem('nequi', JSON.stringify(data));
+                    resolve()
+                },
+                function (error) {
+                    reject({ reason: 'No se pudo actualizar la información del usuario' })
+                }
+            )
+        } else {
+            nequi = JSON.parse(storage.getItem('nequi'));
+            API.executeUpdate(JSON.stringify(data), nequi.id, 'nequi_accounts').then(
+                function (value) {
+                    data.id = nequi.id;
+                    storage.setItem('nequi', JSON.stringify(data));
+                    resolve();
+                },
+                function (error) {
+                    reject({ reason: 'No se pudo actualizar la información del usuario' })
+                }
+            )
+        }
+    })
+}
+
+const modifyAccountBancolombia = async (fields, user) => {
+    return new Promise(async function (resolve, reject) {
+        var data = {
+            accountNumber: fields['numero_cuenta'].value,
+            document: fields['documento_bancolombia'].value,
+            accountTitularName: fields['nombre_titular'].value,
+            user: user.id
+        }
+
+        var bancolombia = storage.getItem('bancolombia');
+        if (bancolombia == null) {
+            API.executeInsert(JSON.stringify(data), 'bancolombia_accounts').then(
+                function (value) {
+                    data.id = value.insertId;
+                    storage.setItem('bancolombia', JSON.stringify(data));
+                    resolve()
+                },
+                function (error) {
+                    reject({ reason: 'No se pudo actualizar la información del usuario' })
+                }
+            )
+        } else {
+            bancolombia = JSON.parse(storage.getItem('bancolombia'));
+            API.executeUpdate(JSON.stringify(data), bancolombia.id, 'bancolombia_accounts').then(
+                function (value) {
+                    data.id = bancolombia.id;
+                    storage.setItem('bancolombia', JSON.stringify(data));
+                    resolve()
+                },
+                function (error) {
+                    reject({ reason: 'No se pudo actualizar la información del usuario' })
+                }
+            )
+        }
+    })
+}
+
+export const newOrder = async () => {
+    return new Promise(async function (resolve, reject) {
+
+    })
+}
+
+export const validateProgress = async () => {
+    return new Promise(async function (resolve, reject) {
+        var order = null;
+        var userData = null;
+        var orderDetails = null;
+        var paymentMethod = null;
+
+        await getOrder().then(function (value) { order = value }, function (error) { order = null });
+        await getOrderDetails().then(function (value) { orderDetails = value }, function (error) { orderDetails = null });
+        await getUserData().then(function (value) { userData = value }, function (error) { userData = null });
+        await getPaymenthMethod().then(function (value) { paymentMethod = value }, function (error) { paymentMethod = null });
+
+        if (order == null) reject({ reason: 'No se encontró la orden', allowed: false });
+        if (userData == null) reject({ reason: 'No se encontró la información del usuario', allowed: false });
+        if (orderDetails == null || orderDetails.length < 1) reject({ reason: 'No se encontraron los productos', allowed: true });
+        if (paymentMethod == null) reject({ reason: 'No se encontró el metodo de pago', allowed: true });
+
+        switch (paymentMethod.id) {
+            case 2:
+                if (storage.getItem('bancolombia') == null) reject({ reason: 'No se encontraron los datos de Bancolombia', allowed: true });
+                break;
+            case 3:
+                if (storage.getItem('nequi') == null) reject({ reason: 'No se encontraron los datos de Nequi', allowed: true });
+                break;
+        }
+
+        if ((order.latitude == null || order.latitude == "") ||
+            order.longitude == null || order.longitude == "") reject({ reason: "No se encontró la ubicación del usuario", allowed: true });
+
+        if (order.direction == null || order.direction == "") reject({ reason: "No se encontró la dirección del usuario", allowed: true });
+
+
+        resolve();
+    })
+}

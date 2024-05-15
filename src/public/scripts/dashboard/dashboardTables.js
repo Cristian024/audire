@@ -469,8 +469,6 @@ const executeAction = (e) => {
 
     var elements = form.elements;
 
-    console.log(elements);
-
     var data = '{'
 
     for (var i = 0; i < elements.length; i++) {

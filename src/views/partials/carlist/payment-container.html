@@ -4,29 +4,31 @@
         <br><br>
         <label for="metodo_pago">Método de pago:</label>
         <select name="metodo_pago" id="metodo_pago" required>
-            <option value="">Seleccione un método de pago</option>
-            <option value="tarjeta_credito">Tarjeta de crédito</option>
-            <option value="paypal">PayPal</option>
-            <option value="efectivo">Efectivo</option>
         </select>
         <br><br><br>
-        <div id="tarjeta_credito" style="display: none;">
-            <label for="numero_tarjeta">Número de tarjeta:</label>
-            <input type="text" name="numero_tarjeta" id="numero_tarjeta">
-            <br>
-            <label for="fecha_vencimiento">Fecha de vencimiento:</label>
-            <input type="text" name="fecha_vencimiento" id="fecha_vencimiento">
-            <br>
-            <label for="cvv">CVV:</label>
-            <input type="text" name="cvv" id="cvv">
-            <br>
+        <div id="nequi_form" class="form" style="display: none;">
+            <label for="numero_celular">Número de celular:</label>
+            <input type="number" name="numero_celular" id="numero_celular" class="field">
+            <br><br>
+            <label for="documento">Documento:</label>
+            <input type="number" name="documento_nequi" id="documento_nequi" class="field">
+            <br><br>
+            <label for="email">Email:</label>
+            <input type="email" name="email" id="email" class="field">
+            <br><br>
         </div>
-        <div id="paypal" style="display: none;">
-            <label for="correo_paypal">Correo electrónico de PayPal:</label>
-            <input type="email" name="correo_paypal" id="correo_paypal">
-            <br>
+        <div id="bancolombia_form" class="form" style="display: none;">
+            <label for="numero_cuenta">Numero de cuenta:</label>
+            <input type="number" name="numero_cuenta" id="numero_cuenta" class="field">
+            <br><br>
+            <label for="documento_bancolombia">Documento:</label>
+            <input type="number" name="documento_bancolombia" id="documento_bancolombia" class="field">
+            <br><br>
+            <label for="nombre_titular">Nombre titular:</label>
+            <input type="text" name="nombre_titular" id="nombre_titular" class="field">
+            <br><br>
         </div>
         <br>
-        <input type="submit" value="Confirmar" class="satoshi bold">
+        <input type="submit" value="Siguiente" class="satoshi bold">
     </form>
 </section>

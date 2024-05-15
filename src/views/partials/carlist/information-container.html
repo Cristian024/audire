@@ -3,30 +3,34 @@
   <form class="form-description satoshi">
     <h2>Información personal</h2>
     <label for="nombre_completo">Nombre completo:</label>
-    <input type="text" name="nombre_completo" id="nombre_completo" required>
+    <input type="text" name="nombre_completo" id="nombre_completo" class="field" required>
     <br><br>
     <label for="correo_electronico">Correo electrónico:</label>
-    <input type="email" name="correo_electronico" id="correo_electronico" required>
+    <input type="email" name="correo_electronico" id="correo_electronico" class="field" required>
     <br><br>
     <label for="numero_telefono">Número de teléfono:</label>
-    <input type="tel" name="numero_telefono" id="numero_telefono" required>
+    <input type="tel" name="numero_telefono" id="numero_telefono" class="field" required>
     <br><br>
     <label for="map_information">Dirección</label>
     <div class="map"></div>
-    <label for="direccion_envio">Dirección de envío:</label>
-    <input type="text" name="direccion_envio" id="direccion_envio" required>
+    <input type="text" id="latitude" class="field" disabled style="display: none;" required>
+    <input type="text" id="longitude" class="field" disabled style="display: none;" required>
+    <label for="ciudad_envio">Ciudad de cobertura:</label>
+    <input name="ciudad_envio" id="ciudad_envio" type="text" required class="field" readonly>
     <br><br>
-    <label for="codigo_postal">Código postal:</label>
-    <input type="text" name="codigo_postal" id="codigo_postal" required>
+    <label for="direccion_envio">Dirección de recidencia:</label>
+    <input type="text" name="direccion_envio" id="direccion_envio" class="field" required>
     <br><br>
-    <label for="ciudad_envio">Ciudad:</label>
-    <select name="ciudad_envio" id="ciudad_envio" required>
-      <option value="">Seleccione una ciudad</option>
-      <option value="PO">Popayán</option>
-      <option value="CA">Cali</option>
-      <option value="BO">Bogotá</option>
+    <label for="numero_documento">Numero de documento:</label>
+    <input type="number" name="numero_documento" id="numero_documento" class="field" required>
+    <br><br>
+    <label for="tipo_documento">Tipo de documento:</label>
+    <select name="tipo_documento" id="tipo_documento" class="field" required>
+      <option value=""></option>
+      <option value="CC">Cedula</option>
     </select>
-    <br><br><br><br><br>
+    <br><br>
+    <br><br>
     <input type="submit" value="Siguiente" class="satoshi bold">
   </form>
 
@@ -46,7 +50,6 @@
       <p>Total</p>
       <b class="total-car">$0</b>
     </div>
-    <button class="buy satoshi bold">SIGUIENTE</button>
     <div class="exit">
       <ion-icon name="chevron-back-outline"></ion-icon>
       <p>SEGUIR COMPRANDO</p>

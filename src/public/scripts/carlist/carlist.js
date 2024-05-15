@@ -23,14 +23,16 @@ var geoPoints = [];
 var shippingPrice;
 var totalPrice;
 var order;
+var formInformation;
 
 /* PAYMENT */
 
-var form_payment
+var form_payment;
 
 /* CONFIRMATION */
 
-var confirmation_btn
+var confirmation_btn;
+var back_btn;
 
 export default async () => {
     section = document.querySelector('body').classList[1]
@@ -76,9 +78,6 @@ const toggleSection = (pos) => {
     })
     status_list[2].addEventListener('click', () => {
         window.location = '../carlist/payment';
-    })
-    status_list[3].addEventListener('click', () => {
-        window.location = '../carlist/confirmation';
     })
 
     for (let i = 0; i < sections.length; i++) {
@@ -312,16 +311,17 @@ const init_list = async () => {
     exit.addEventListener('click', backToProducts);
 }
 
-var mapConfig = {
-    latitude: 3.3984486,
-    longitude: -73.5723,
-    zoom: 3
-}
 const init_information = async () => {
+    var mapConfig = {
+        latitude: 3.3984486,
+        longitude: -73.5723,
+        zoom: 3
+    }
     map_div = document.querySelector('.map');
     subtotalCar = document.querySelector('.subtotal-car');
     shippingPrice = document.querySelector('.shippingPrice');
     totalPrice = document.querySelector('.total-car');
+    formInformation = document.querySelector('.form-description');
 
     const drawPolygon = (points, id) => {
         console.log([points, id]);
@@ -407,8 +407,12 @@ const init_information = async () => {
     }
 
     const updatePriceOrder = (userPos, geoPoints) => {
+        formInformation.querySelector('#longitude').value = userPos.lng;
+        formInformation.querySelector('#latitude').value = userPos.lat;
         CONTROLLER.hasCoverage(userPos, geoPoints).then(
             function (value) {
+                document.querySelector('#ciudad_envio').value = value.name;
+                document.querySelector('#ciudad_envio').setAttribute('city_id', value.id);
                 notificationConfig.text = `Tiene cobertura en la ciudad de ${value.name}`;
                 notificationConfig.background = 'green';
                 showMessagePopup(notificationConfig);
@@ -430,21 +434,63 @@ const init_information = async () => {
             longitude: mapConfig.longitude,
             latitude: mapConfig.latitude
         };
+
         await CONTROLLER.getUserData().then(
             function (value) {
                 const latitude = value.latitude;
                 const longitude = value.longitude;
-                const city = value.city
+                const city = value.city;
+                const email = value.email;
+                const name = value.name;
+                const number = value.cellphone;
+                const direction = value.direction;
+                const doc = value.document;
+                const docType = value.documentType;
+
+                document.querySelector('#nombre_completo').value = name;
+                document.querySelector('#correo_electronico').value = email;
+                document.querySelector('#numero_telefono').value = number;
+                document.querySelector('#direccion_envio').value = direction;
+                document.querySelector('#ciudad_envio').value = city;
+                document.querySelector('#direccion_envio').value = direction;
+                document.querySelector('#numero_documento').value = doc;
+                document.querySelector('#tipo_documento').value = docType;
+                document.querySelector('#latitude').value = latitude;
+                document.querySelector('#longitude').value = longitude;
 
                 if ((latitude !== null && latitude !== "0" && latitude !== 0) &&
                     (longitude !== null && longitude !== "0" && longitude !== 0) &&
                     (city !== null)) {
                     mapConfig.latitude = latitude;
                     mapConfig.longitude = longitude;
-                    mapConfig.zoom = 10;
+                    mapConfig.zoom = 4;
 
                     userPosition.latitude = latitude;
                     userPosition.longitude = longitude;
+                    API.executeConsult(null, 'cities').then(
+                        function (value) {
+                            const geoPointsUser = [];
+                            value.forEach(element => {
+                                var points = element.points;
+                                var id = element.id;
+                                var name = element.name;
+                                if (points != null && points != "") {
+                                    points = JSON.parse(points);
+                                    geoPointsUser.push({
+                                        id: id,
+                                        name: name,
+                                        points: points
+                                    });
+                                }
+                            });
+                            updatePriceOrder({ lng: longitude, lat: latitude }, geoPointsUser);
+                        },
+                        function (error) {
+                            notificationConfig.text = "Error al cargar los puntos geograficos";
+                            notificationConfig.background = "red";
+                            showMessagePopup(notificationConfig);
+                        }
+                    )
                 }
             },
             function (error) {
@@ -472,45 +518,309 @@ const init_information = async () => {
 
     initOrder();
 
-    const nextStep = (e) => {
-        window.location = '../carlist/payment'
+    const nextStep = () => {
+        const fields = formInformation;
+
+        const data = {
+            'name': fields.querySelector('#nombre_completo').value,
+            'mail': fields.querySelector('#correo_electronico').value,
+            'cellphone': fields.querySelector('#numero_telefono').value,
+            'latitude': fields.querySelector('#latitude').value,
+            'longitude': fields.querySelector('#longitude').value,
+            'city': fields.querySelector('#ciudad_envio').getAttribute('city_id'),
+            'direction': fields.querySelector('#direccion_envio').value,
+            'identification': fields.querySelector('#numero_documento').value,
+            'document_type': fields.querySelector('#tipo_documento').value,
+            'geopoints': geoPoints
+        }
+
+        CONTROLLER.updateOrderShipping(data).then(
+            function (value) {
+                window.location = '../carlist/payment';
+            },
+            function (error) {
+                notificationConfig.text = error.reason;
+                notificationConfig.background = 'red';
+                showMessagePopup(notificationConfig);
+            }
+        )
     }
 
     form_description = document.querySelector('.form-description')
 
     form_description.addEventListener('submit', (e) => {
-        e.preventDefault()
-
-        nextStep()
+        e.preventDefault();
+        nextStep();
     })
 }
 
 const init_payment = () => {
     const metodoPago = document.getElementById('metodo_pago');
-    const tarjetaCredito = document.getElementById('tarjeta_credito');
-    const paypal = document.getElementById('paypal');
-    form_payment = document.querySelector('.form-payment')
+    const nequiForm = document.querySelector('#nequi_form');
+    const bancolombiaForm = document.querySelector('#bancolombia_form');
+    const formPayment = document.querySelector('.form-payment')
+
+    API.executeInsert(JSON.stringify({ consult: "SELECT * FROM payment_methods" }), 'custom').then(
+        function (value) {
+            var inner = '<option value="">Seleccione un método de pago</option>';
+            value.data.forEach(element => {
+                inner += `<option value="${element.id}">${element.name}</option>`;
+            });
+            metodoPago.innerHTML = inner;
+            CONTROLLER.getPaymenthMethod().then(
+                function (value) {
+                    metodoPago.value = value.id;
+                    methodChange(value.id);
+                },
+                function (error) {
+
+                }
+            )
+            CONTROLLER.getAccountPaymenthUser().then(
+                function (value) {
+                    if (value !== null) {
+                        if (value.nequi !== null) {
+                            loadFieldsNequi(value.nequi);
+                        }
+                        if (value.bancolombia !== null) {
+                            loadFieldsBancolombia(value.bancolombia);
+                        }
+                    }
+                },
+                function (error) {
+                    notificationConfig.text = error.reason;
+                    notificationConfig.background = 'red';
+                    showMessagePopup(notificationConfig);
+                }
+            )
+        },
+        function (error) {
+            notificationConfig.text = 'Error al cargar los métodos de pago';
+            notificationConfig.background = 'red';
+            showMessagePopup(notificationConfig);
+        }
+    )
+
+    const loadFieldsNequi = (data) => {
+        nequiForm.querySelector('#numero_celular').value = data.cellphone;
+        nequiForm.querySelector('#documento_nequi').value = data.document;
+        nequiForm.querySelector('#email').value = data.email;
+    }
+
+    const loadFieldsBancolombia = (data) => {
+        bancolombiaForm.querySelector('#numero_cuenta').value = data.accountNumber;
+        bancolombiaForm.querySelector('#documento_bancolombia').value = data.document;
+        bancolombiaForm.querySelector('#nombre_titular').value = data.accountTitularName;
+    }
 
     metodoPago.addEventListener('change', () => {
-        console.log(metodoPago.value);
-        if (metodoPago.value === 'tarjeta_credito') {
-            tarjetaCredito.style.display = 'block'
-        } else {
-            tarjetaCredito.style.display = 'none'
-        }
+        methodChange(metodoPago.value);
     })
 
-    form_payment.addEventListener('submit', (e) => {
-        e.preventDefault()
+    const methodChange = (method) => {
+        switch (metodoPago.value) {
+            case '1':
+                toggleFields(null, { id: 1, name: 'Efectivo' });
+                break;
+            case '2':
+                toggleFields(bancolombiaForm, { id: 2, name: 'Bancolombia' });
+                break;
+            case '3':
+                toggleFields(nequiForm, { id: 3, name: 'Nequi' });
+                break;
+        }
+    }
 
-        window.location = '../carlist/confirmation'
+    const toggleFields = (form, method) => {
+        formPayment.querySelectorAll('.field').forEach(element => {
+            element.removeAttribute('required');
+        });
+
+        formPayment.querySelectorAll('.form').forEach(element => {
+            element.style.display = 'none';
+        });
+
+        if (form != null) {
+            form.querySelectorAll('.field').forEach(element => {
+                element.setAttribute('required', '');
+            });
+            form.style.display = 'block';
+        }
+
+        CONTROLLER.setPaymentMethod(method);
+    }
+
+    formPayment.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const fields = e.target.elements;
+
+        CONTROLLER.updateOrderPayment(fields).then(
+            function (value) {
+                window.location = '../carlist/confirmation'
+            },
+            function (error) {
+                notificationConfig.text = error.reason;
+                notificationConfig.background = 'red';
+                showMessagePopup(notificationConfig);
+            }
+        )
     })
 }
 
 const init_confirmation = () => {
-    confirmation_btn = document.querySelector('.confirmation_btn')
+    const messageUser = document.querySelector('.message_user');
+    const personalInformation = document.querySelector('.personal_information');
+    const productsInformation = document.querySelector('.products_information');
+    const popupMessage = document.querySelector('.popup_message');
+    back_btn = document.querySelector('.back_btn');
+    confirmation_btn = document.querySelector('.confirmation_btn');
 
-    confirmation_btn.addEventListener('click', (e) => {
-        window.location = '../products'
-    })
+    const initConfirmation = async () => {
+        CONTROLLER.getUserData().then(
+            function (user) {
+                personalInformation.querySelector('.name').textContent = user.name;
+                personalInformation.querySelector('.cellphone').textContent = user.cellphone;
+                personalInformation.querySelector('.email').textContent = user.email;
+                personalInformation.querySelector('.direction').textContent = user.direction;
+                CONTROLLER.getPaymenthMethod().then(
+                    function (method) {
+                        personalInformation.querySelector('.method').textContent = method.name;
+                        var route = null;
+                        if (method.id == 2) route = 'bancolombia_accounts_by_user';
+                        if (method.id == 3) route = 'nequi_accounts_by_user';
+
+                        if (route !== null) {
+                            API.executeConsult(user.id, route).then(
+                                function (value) {
+                                    const account = value[0];
+                                    if (method.id == 2) showBancolombiaInfo(account);
+                                    if (method.id == 3) showNequiInfo(account);
+                                },
+                                function (error) {
+                                    notificationConfig.text = 'No se pudo obtener la información de pago';
+                                    notificationConfig.background = 'red';
+                                    showMessagePopup(notificationConfig);
+                                }
+                            )
+                        }
+                    },
+                    function (error) {
+                        notificationConfig.text = 'No se pudo obtener la información de pago';
+                        notificationConfig.background = 'red';
+                        showMessagePopup(notificationConfig);
+                    }
+                )
+            },
+            function (error) {
+                notificationConfig.text = 'No se pudo obtener la información del usuario';
+                notificationConfig.background = 'red';
+                showMessagePopup(notificationConfig);
+            }
+        )
+
+        CONTROLLER.getOrderDetails().then(
+            async function (value) {
+                value.forEach(element => {
+                    API.executeConsult(element.product, 'products').then(
+                        function (value) {
+                            const product = value[0];
+
+                            const tr = document.createElement('tr');
+
+                            const name = document.createElement('td');
+                            name.textContent = product.name;
+
+                            const quantity = document.createElement('td');
+                            quantity.textContent = element.quantity;
+
+                            const priceUnit = document.createElement('td');
+                            priceUnit.textContent = product.price;
+
+                            const subTotal = document.createElement('td');
+                            subTotal.textContent = element.totalPrice;
+
+                            tr.append(name);
+                            tr.append(quantity);
+                            tr.append(priceUnit);
+                            tr.append(subTotal);
+
+                            productsInformation.append(tr);
+                        },
+                        function (error) {
+                            notificationConfig.text = 'Error al cargar los productos';
+                            notificationConfig.background = 'red';
+                            showMessagePopup(notificationConfig);
+                        }
+                    )
+                });
+            },
+            function (error) {
+                notificationConfig.text = error.reason;
+                notificationConfig.background = 'red';
+                showMessagePopup(notificationConfig);
+            }
+        )
+
+        CONTROLLER.getOrder().then(
+            function (value) {
+                document.querySelector('.subtotal').textContent = `$${value.subTotal}`;
+                document.querySelector('.shipping_price').textContent = `$${value.shippingPrice}`;
+                document.querySelector('.total').textContent = `$${value.totalPrice}`
+            },
+            function (error) {
+                notificationConfig.text = 'No se pudo cargar la orden';
+                notificationConfig.background = 'red';
+                showMessagePopup(notificationConfig);
+            }
+        )
+
+        confirmation_btn.addEventListener('click', () =>{
+            
+        })
+    }
+
+    const showBancolombiaInfo = (data) => {
+        var inner = personalInformation.innerHTML;
+        inner += `
+        <p class='marker'>Numero de cuenta:</p>
+        <p class='m_info ${data.accountNumber}'>${data.accountNumber}</p>
+        <p class='marker'>Documento:</p>
+        <p class='m_info ${data.document}'>${data.document}</p>
+        <p class='marker'>Email:</p>
+        <p class='m_info ${data.accountTitularName}'>${data.accountTitularName}</p>
+        `
+        personalInformation.innerHTML = inner;
+    }
+
+    const showNequiInfo = (data) => {
+        var inner = personalInformation.innerHTML;
+        inner += `
+            <p class='marker'>Numero de cuenta:</p>
+            <p class='m_info ${data.accountNumber}'>${data.accountNumber}</p>
+            <p class='marker'>Documento:</p>
+            <p class='m_info ${data.document}'>${data.document}</p>
+            <p class='marker'>Nombre titular:</p>
+            <p class='m_info ${data.email}'>${data.email}</p>
+        `
+        personalInformation.innerHTML = inner;
+    }
+
+    CONTROLLER.validateProgress().then(
+        function (value) {
+            initConfirmation();
+        },
+        function (error) {
+            if (error.allowed) {
+                messageUser.querySelector('.title_message').textContent = 'Lo sentimos se presentó un error'
+                messageUser.querySelector('.subtitle_message').textContent = `Razón: ${error.reason}`;
+                messageUser.classList.toggle('disabled');
+                document.querySelector('.information_shop').classList.toggle('disabled');
+                back_btn.addEventListener('click', (e) => {
+                    window.location = '../'
+                })
+            } else {
+                window.location = '../';
+            }
+        }
+    )
 }

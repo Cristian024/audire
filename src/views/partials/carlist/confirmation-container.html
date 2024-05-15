@@ -1,5 +1,56 @@
 <section class="confirmation-container section-buy satoshi">
-    <h2>Tu pedido está en camino</h2>
-    <p>Te confirmaremos al correo el estado de tu pedido</p>
-    <button class="confirmation_btn">Volver al comercio</button>
+  <div class="message_user disabled">
+    <h2 class="title_message">Tu pedido está en camino</h2>
+    <p class="subtitle_message">Te confirmaremos al correo el estado de tu pedido</p>
+    <button class="back_btn">Volver al comercio</button>
+  </div>
+  <div class="information_shop">
+    <div class="personal_information">
+      <h2>Información Personal</h2>
+      <br>
+      <p class="marker">Cliente:</p>
+      <p class="p_info name"></p>
+      <p class="marker">Numero telefonico:</p>
+      <p class="p_info cellphone"></p>
+      <p class="marker">Email:</p>
+      <p class="p_info email"></p>
+      <p class="marker">Dirección:</p>
+      <p class="p_info direction"></p>
+      <br><br>
+      <h2>Información de pago</h2>
+      <br>
+      <p class="marker">Método de pago:</p>
+      <p class="m_info method"></p>
+    </div>
+    <div class="products_information_div">
+      <table>
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio unitario</th>
+            <th>Precio</th>
+          </tr>
+        </thead>
+        <tbody class="products_information">
+
+        </tbody>
+      </table>
+      <div class="subtotal_div">
+        <p class="marker">SubTotal</p>
+        <p class="m_info subtotal"></p>
+        <p class="marker">Precio de envío</p>
+        <p class="m_info shipping_price"></p>
+      </div>
+      <div class="total_div">
+        <p class="marker">Total</p>
+        <h2 class="m_info total"></h2>
+      </div>
+    </div>
+    <button class="confirmation_btn">Confirmar</button>
+  </div>
 </section>
+
+<div class="popup_message">
+  
+</div>
