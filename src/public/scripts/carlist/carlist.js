@@ -774,8 +774,36 @@ const init_confirmation = () => {
             }
         )
 
-        confirmation_btn.addEventListener('click', () =>{
-            
+        confirmation_btn.addEventListener('click', () => {
+            CONTROLLER.validateProgress().then(
+                function (value) {
+                    CONTROLLER.newOrder().then(
+                        function (value) {
+                            messageUser.querySelector('.title_message').textContent = 'Se creó tu pedido correctamente.';
+                            messageUser.querySelector('.subtitle_message').textContent = `Gracias por tu compra, te escribiremos a tu correo cuando tu pedido llegue.`;
+                            messageUser.classList.toggle('disabled');
+                            document.querySelector('.information_shop').classList.toggle('disabled');
+                            back_btn.addEventListener('click', (e) => {
+                                window.location = '../'
+                            });
+                        },
+                        function (error) {
+                            notificationConfig.text = error.reason;
+                            notificationConfig.background = 'red';
+                            showMessagePopup(notificationConfig);
+                        }
+                    )
+                },
+                function (error) {
+                    messageUser.querySelector('.title_message').textContent = 'Lo sentimos se presentó un error'
+                    messageUser.querySelector('.subtitle_message').textContent = `Razón: ${error.reason}`;
+                    messageUser.classList.toggle('disabled');
+                    document.querySelector('.information_shop').classList.toggle('disabled');
+                    back_btn.addEventListener('click', (e) => {
+                        window.location = '../'
+                    })
+                }
+            )
         })
     }
 

@@ -638,7 +638,60 @@ const modifyAccountBancolombia = async (fields, user) => {
 
 export const newOrder = async () => {
     return new Promise(async function (resolve, reject) {
+        getOrder().then(
+            function (order) {
+                var date = new Date();
 
+                var year = date.getFullYear();
+                var month = date.getMonth() + 1;
+                var day = date.getDate();
+
+                var formatedDay = year + '/' + month.toString().padStart(2, '0') + '/' + day.toString().padStart(2, '0');
+                order.orderDate = formatedDay;
+
+                delete order.id;
+                API.executeInsert(JSON.stringify(order), 'orders').then(
+                    function (value) {
+                        const orderId = value.insertId;
+                        getOrderDetails().then(
+                            async function (orders) {
+                                var count = 0;
+
+                                for (const element of orders) {
+                                    element.orderId = orderId;
+                                    delete element.id;
+
+                                    await API.executeInsert(JSON.stringify(element), 'orders_detail').then(
+                                        function (value) {
+                                            count++;
+                                        },
+                                        function (error) {
+                                            console.log(error);
+                                        }
+                                    )
+                                }
+
+                                if (count == orders.length) {
+                                    resolve()
+                                } else {
+                                    reject({ reason: 'No se pudo crear la orden' });
+                                }
+                            },
+                            function (error) {
+                                reject({ reason: 'No se pudo crear la orden' })
+                            }
+                        )
+                    },
+                    function (error) {
+                        console.log(error);
+                        reject({ reason: 'No se pudo crear la orden' });
+                    }
+                )
+            },
+            function (error) {
+                reject({ reason: 'No se pudo obtener la orden' });
+            }
+        )
     })
 }
 
