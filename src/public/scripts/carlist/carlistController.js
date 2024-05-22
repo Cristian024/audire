@@ -57,20 +57,21 @@ export const emptyOrderDetails = () => {
     storage.removeItem('orderDetails');
 }
 
+export const validateOrder = () =>{
+    return new Promise(function (resolve, reject){
+        const order = JSON.parse(storage.getItem('order')) || null;
+        if(order == null){
+            reject();
+        }else{
+            resolve(order);
+        }
+    })
+}
+
 export const getOrder = () => {
     return new Promise(async function (resolve, reject) {
         const order = JSON.parse(storage.getItem('order')) || null;
         if (order == null) {
-            /*
-            var date = new Date();
-    
-            var year = date.getFullYear();
-            var month = date.getMonth() + 1;
-            var day = date.getDate();
-    
-            var formatedDay = year + '/' + month.toString().padStart(2, '0') + '/' + day.toString().padStart(2, '0');
-            orderObject.orderDate = formatedDay;
-            */
             getUserData().then(
                 function (value) {
                     orderObject.user = value.id;
@@ -123,42 +124,52 @@ export const updateOrder = () => {
 
 export const addOrderDetail = async (data) => {
     return new Promise(async function (resolve, reject) {
-        orderDetails = JSON.parse(storage.getItem('orderDetails'));
-        API.executeConsult(data.id, 'products')
-            .then(
-                function (value) {
-                    const product = value[0];
-                    const order = orderDetail;
+        getOrderDetails().then(
+            function (value) {
+                orderDetails = value;
+            },
+            function (error) {
+                storage.setItem('orderDetails', JSON.stringify([]));
+                orderDetails = JSON.parse(storage.getItem('orderDetails'));
+            }
+        )
+            .finally(function () {
+                API.executeConsult(data.id, 'products')
+                    .then(
+                        function (value) {
+                            const product = value[0];
+                            const order = orderDetail;
 
-                    const price = parseInt(product.price);
+                            const price = parseInt(product.price);
 
-                    order.orderId = null;
-                    order.product = product.id;
-                    order.quantity = data.quantity;
-                    order.totalPrice = price * data.quantity;
+                            order.orderId = null;
+                            order.product = product.id;
+                            order.quantity = data.quantity;
+                            order.totalPrice = price * data.quantity;
 
-                    if (orderDetails.length > 0) {
-                        var exits = false;
-                        orderDetails.forEach(element => {
-                            if (element.product == order.product) {
-                                exits = true;
-                                reject({ reason: 'El producto ya está añadido' });
-                                return;
+                            if (orderDetails.length > 0) {
+                                var exits = false;
+                                orderDetails.forEach(element => {
+                                    if (element.product == order.product) {
+                                        exits = true;
+                                        reject({ reason: 'El producto ya está añadido' });
+                                        return;
+                                    }
+                                });
+
+                                if (!exits) orderDetails.push(order);
+                            } else {
+                                orderDetails.push(order);
                             }
-                        });
 
-                        if (!exits) orderDetails.push(order);
-                    } else {
-                        orderDetails.push(order);
-                    }
-
-                    storage.setItem('orderDetails', JSON.stringify(orderDetails));
-                    resolve()
-                },
-                function (error) {
-                    reject()
-                }
-            )
+                            storage.setItem('orderDetails', JSON.stringify(orderDetails));
+                            resolve()
+                        },
+                        function (error) {
+                            reject()
+                        }
+                    )
+            })
     })
 }
 
@@ -672,6 +683,9 @@ export const newOrder = async () => {
                                 }
 
                                 if (count == orders.length) {
+                                    storage.removeItem('order');
+                                    storage.removeItem('orderDetails');
+                                    storage.removeItem('paymentMethod');
                                     resolve()
                                 } else {
                                     reject({ reason: 'No se pudo crear la orden' });
@@ -695,37 +709,40 @@ export const newOrder = async () => {
     })
 }
 
-export const validateProgress = async () => {
+export const validateProgress = async (route) => {
     return new Promise(async function (resolve, reject) {
         var order = null;
         var userData = null;
         var orderDetails = null;
         var paymentMethod = null;
 
-        await getOrder().then(function (value) { order = value }, function (error) { order = null });
+        await validateOrder().then(function (value) { order = value }, function (error) { order = null });
         await getOrderDetails().then(function (value) { orderDetails = value }, function (error) { orderDetails = null });
         await getUserData().then(function (value) { userData = value }, function (error) { userData = null });
         await getPaymenthMethod().then(function (value) { paymentMethod = value }, function (error) { paymentMethod = null });
 
-        if (order == null) reject({ reason: 'No se encontró la orden', allowed: false });
         if (userData == null) reject({ reason: 'No se encontró la información del usuario', allowed: false });
+        if (order == null) reject({ reason: 'No se encontró la orden', allowed: false });
         if (orderDetails == null || orderDetails.length < 1) reject({ reason: 'No se encontraron los productos', allowed: true });
-        if (paymentMethod == null) reject({ reason: 'No se encontró el metodo de pago', allowed: true });
+        if (paymentMethod == null && route == 'confirmation') reject({ reason: 'No se encontró el metodo de pago', allowed: true });
 
-        switch (paymentMethod.id) {
-            case 2:
-                if (storage.getItem('bancolombia') == null) reject({ reason: 'No se encontraron los datos de Bancolombia', allowed: true });
-                break;
-            case 3:
-                if (storage.getItem('nequi') == null) reject({ reason: 'No se encontraron los datos de Nequi', allowed: true });
-                break;
+        if (paymentMethod !== null && route == 'confirmation') {
+            switch (paymentMethod.id) {
+                case 2:
+                    if (storage.getItem('bancolombia') == null) reject({ reason: 'No se encontraron los datos de Bancolombia', allowed: true });
+                    break;
+                case 3:
+                    if (storage.getItem('nequi') == null) reject({ reason: 'No se encontraron los datos de Nequi', allowed: true });
+                    break;
+            }
         }
 
-        if ((order.latitude == null || order.latitude == "") ||
-            order.longitude == null || order.longitude == "") reject({ reason: "No se encontró la ubicación del usuario", allowed: true });
+        if (order !== null && route == 'confirmation') {
+            if ((order.latitude == null || order.latitude == "") ||
+                order.longitude == null || order.longitude == "") reject({ reason: "No se encontró la ubicación del usuario", allowed: true });
 
-        if (order.direction == null || order.direction == "") reject({ reason: "No se encontró la dirección del usuario", allowed: true });
-
+            if (order.direction == null || order.direction == "") reject({ reason: "No se encontró la dirección del usuario", allowed: true });
+        }
 
         resolve();
     })

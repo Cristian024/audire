@@ -40,6 +40,47 @@ export default async () => {
 
     status_list = document.querySelectorAll('.status')
 
+    CONTROLLER.validateProgress(section).then(
+        async function(value){
+            initSections(section)
+        },
+        function(error){
+            if(error.allowed){
+                notificationConfig.background = 'red';
+                notificationConfig.text = error.reason;
+                showMessagePopup(notificationConfig);
+                initSections(section)
+            }else{
+                if(section != 'list'){
+                    window.location = '../carlist/list';    
+                }else{
+                    window.location = '../';
+                }
+            }
+        }
+    )
+
+    window.addEventListener('pageshow', async (e) =>{
+        if(e.persisted){
+            const response = await fetch('../validateSession',{
+                method: 'GET'
+            })
+
+            const data = response.text();
+            const data_response = await data.then(res => {
+                return JSON.parse(res);
+            })
+
+            if(data_response.sessionExpires){
+                window.location = '../'
+            }
+        }
+    })
+
+    document.querySelector('.order-btn').remove()
+}
+
+const initSections = async (section) => {
     switch (section) {
         case 'list':
             toggleSection(0)
@@ -62,7 +103,6 @@ export default async () => {
             break;
     }
 
-    document.querySelector('.order-btn').remove()
 
     loadPage()
 }

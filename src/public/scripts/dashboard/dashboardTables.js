@@ -505,8 +505,6 @@ const executeAction = (e) => {
 
     data += "}"
 
-    console.log(data);
-
     if (countFiles) {
         if (loaded) {
             routerMethods(method, data, id);
