@@ -60,19 +60,25 @@ router.get('/validateSession', (req, res) => {
 })
 
 router.get('/products', (req, res) => {
-    res.render('products.html', { pagina: 'PRODUCTS' })
+    res.render('products.html', { pagina: 'PRODUCTS' });
 })
 
 router.get('/products/:id', (req, res) => {
     const id = req.params.id
 
-    res.render('product.html', { pagina: 'PRODUCTS', product: id })
+    res.render('product.html', { pagina: 'PRODUCTS', product: id });
 })
 
 router.get('/carlist/:id', (req, res) => {
     const list = req.params.id
+    const loggedin = req.session.loggedin;
+    const role = req.session.role;
 
-    res.render('carlist.html', { pagina: 'CARLIST', section: list })
+    if(loggedin && role === 204){
+        res.render('carlist.html', { pagina: 'CARLIST', section: list });
+    }else{
+        res.redirect('../');
+    }
 })
 
 router.use('/dashboard', dashboard)

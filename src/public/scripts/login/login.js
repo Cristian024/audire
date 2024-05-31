@@ -81,6 +81,7 @@ const registerUser = async (e) => {
 }
 
 const loginUser = async (data) => {
+    localStorage.clear();
     API.consultLogin(data)
         .then(
             async function (value) {

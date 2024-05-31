@@ -57,12 +57,12 @@ export const emptyOrderDetails = () => {
     storage.removeItem('orderDetails');
 }
 
-export const validateOrder = () =>{
-    return new Promise(function (resolve, reject){
+export const validateOrder = () => {
+    return new Promise(function (resolve, reject) {
         const order = JSON.parse(storage.getItem('order')) || null;
-        if(order == null){
+        if (order == null) {
             reject();
-        }else{
+        } else {
             resolve(order);
         }
     })
@@ -647,7 +647,93 @@ const modifyAccountBancolombia = async (fields, user) => {
     })
 }
 
+export const validateStock = async () => {
+    return new Promise(function (resolve, reject) {
+        const order = JSON.parse(storage.getItem('order'))
+        orderDetails = JSON.parse(storage.getItem('orderDetails'));
+
+        const totalDetails = orderDetails.length;
+        var count = 0;
+
+        const lotsStock = []
+
+        API.executeConsult(null, 'lot').then(
+            async function (value) {
+                const lots = value;
+                for (let i = 0; i < orderDetails.length; i++) {
+                    const detail = orderDetails[i];
+                    for (let o = 0; o < lots.length; o++) {
+                        const lot = lots[o];
+                        if (order.city == lot.depotCityId &&
+                            detail.product == lot.product) {
+                            if (lot.quantityStock > detail.quantity + 1) {
+                                lotsStock.push({
+                                    lot: lot,
+                                    quantity: lot.quantityStock - detail.quantity
+                                })
+                                count++;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (count == totalDetails) {
+                    resolve({ lots: lotsStock });
+                } else {
+                    reject({ reason: 'No hay stock para los productos' })
+                }
+            },
+            function (error) {
+                reject({ reason: 'Error al cargar información de los productos' })
+            }
+        )
+    })
+}
+
 export const newOrder = async () => {
+    return new Promise(function (resolve, reject) {
+        validateStock().then(
+            async function (value) {
+                const lots = value.lots;
+                var count = 0;
+
+                for (let i = 0; i < lots.length; i++) {
+                    const lot = lots[i].lot
+                    await API.executeUpdate(JSON.stringify({
+                        'quantityStock': lots[i].quantity
+                    }), lot.id, 'lot').then(
+                        function (value) {
+                            count++;
+                        },
+                        function (error) {
+                            console.log(error);
+                        }
+                    )
+                }
+
+                if (count == lots.length) {
+                    insertOrder().then(
+                        function (value) {
+                            storage.removeItem('order');
+                            storage.removeItem('orderDetails');
+                            storage.removeItem('paymentMethod');
+                            resolve();
+                        },
+                        function (error) {
+                            reject(error);
+                        }
+                    )
+                } else {
+                    reject({ reason: 'No se pudo descontar el producto' });
+                }
+            },
+            function (error) {
+                reject(error)
+            })
+    })
+}
+
+const insertOrder = async () => {
     return new Promise(async function (resolve, reject) {
         getOrder().then(
             function (order) {
@@ -683,9 +769,6 @@ export const newOrder = async () => {
                                 }
 
                                 if (count == orders.length) {
-                                    storage.removeItem('order');
-                                    storage.removeItem('orderDetails');
-                                    storage.removeItem('paymentMethod');
                                     resolve()
                                 } else {
                                     reject({ reason: 'No se pudo crear la orden' });

@@ -72,7 +72,8 @@ export default async () => {
             })
 
             if(data_response.sessionExpires){
-                window.location = '../'
+                localStorage.clear();
+                window.location = '../';
             }
         }
     })

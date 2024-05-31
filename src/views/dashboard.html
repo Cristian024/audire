@@ -202,7 +202,7 @@
       <div class="cardBox">
         <div class="card">
           <div>
-            <div class="numbers">0</div>
+            <div class="numbers visitsNumber">0</div>
             <div class="cardName">Visitas</div>
           </div>
 
@@ -213,7 +213,7 @@
 
         <div class="card">
           <div>
-            <div class="numbers">0</div>
+            <div class="numbers salesNumber">0</div>
             <div class="cardName">Ventas</div>
           </div>
 
@@ -224,7 +224,7 @@
 
         <div class="card">
           <div>
-            <div class="numbers">$0</div>
+            <div class="numbers earningsNumber">$0</div>
             <div class="cardName">Ingresos</div>
           </div>
 
@@ -236,29 +236,21 @@
       <div class="details">
         <div class="recentOrders">
           <div class="cardHeader">
-            <h2>Recent Orders</h2>
-            <a href="#" class="btn">View All</a>
+            <h2>Ordenes recientes</h2>
+            <a href="../dashboard/orders" class="btn">View All</a>
           </div>
 
           <table>
             <thead>
               <tr>
-                <td>Nombre</td>
+                <td>Usuario</td>
                 <td>Precio</td>
                 <td>Pago</td>
                 <td>Estado</td>
               </tr>
             </thead>
 
-            <tbody>
-              <!--
-                            <tr>
-                                <td>Star Refrigerator</td>
-                                <td>$1200</td>
-                                <td>Paid</td>
-                                <td><span class="status delivered">Delivered</span></td>
-                            </tr>
-                            -->
+            <tbody class="recent_orders_table">
             </tbody>
           </table>
         </div>
@@ -266,15 +258,12 @@
         <!-- ================= New Customers ================ -->
         <div class="recentCustomers">
           <div class="cardHeader">
-            <h2>Recent Customers</h2>
+            <h2>Clientes recientes</h2>
           </div>
 
-          <table>
+          <table class="recent_clients_table">
             <!--
                         <tr>
-                            <td width="60px">
-                                <div class="imgBx"><img src="assets/imgs/customer02.jpg" alt=""></div>
-                            </td>
                             <td>
                                 <h4>David <br> <span>Italy</span></h4>
                             </td>

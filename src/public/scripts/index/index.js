@@ -1,7 +1,7 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.121.1/build/three.module.js";
 import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/loaders/GLTFLoader.js";
 import * as CARDS from "../products/cards.js"
-import {loadPage} from '../script.js'
+import { loadPage } from '../script.js'
 import * as API from "../dependencies/apiMethods.js"
 import { showMessagePopup, notificationConfig } from '../dependencies/notification.js';
 
@@ -32,7 +32,7 @@ const sizes = {
     height: window.innerHeight
 };
 
-const initCanvasProduct = async() => {
+const initCanvasProduct = async () => {
     scene_product = new THREE.Scene()
 
     camera_product = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 1000)
@@ -63,29 +63,29 @@ const initCanvasProduct = async() => {
     loader.crossOrigin = ""
 
     await loader.load(ROUTE_HEADPHONES, (gltf) => {
-            gltf.scene.traverse(child => {
-                child.castShadow = true;
-            });
-            gltf.scene.position.set(0, -2, 0)
-            gltf.scene.rotation.y = 3.15
+        gltf.scene.traverse(child => {
+            child.castShadow = true;
+        });
+        gltf.scene.position.set(0, -2, 0)
+        gltf.scene.rotation.y = 3.15
 
-            scene_product.add(gltf.scene);
+        scene_product.add(gltf.scene);
 
-            const rotation = gltf.scene.rotation
+        const rotation = gltf.scene.rotation
 
-            let tl = new TimelineLite()
+        let tl = new TimelineLite()
 
-            const camera_position = camera_product.position
-            window.addEventListener('mousemove', (e) => {
-                const x = (e.clientX / window.innerWidth) * 2 - 1
-                const y = (e.clientY / window.innerHeight) * 2 + 1
+        const camera_position = camera_product.position
+        window.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth) * 2 - 1
+            const y = (e.clientY / window.innerHeight) * 2 + 1
 
-                camera_position.set((x * 0.1), (y * 0.1), 8)
-            }, false)
+            camera_position.set((x * 0.1), (y * 0.1), 8)
+        }, false)
 
-        }, (xhr) => {
-            console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
-        },
+    }, (xhr) => {
+        console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+    },
         (error) => {
             console.log(error)
         })
@@ -125,30 +125,30 @@ const initCanvasPrincipal = () => {
     loader.crossOrigin = ""
 
     loader.load(ROUTE_HEADPHONES, (gltf) => {
-            gltf.scene.traverse(child => {
-                child.castShadow = true;
-            });
-            gltf.scene.rotation.x = 0.3
-            gltf.scene.rotation.z = 0.1
-            gltf.scene.position.set(-15, 6, -6)
+        gltf.scene.traverse(child => {
+            child.castShadow = true;
+        });
+        gltf.scene.rotation.x = 0.3
+        gltf.scene.rotation.z = 0.1
+        gltf.scene.position.set(-15, 6, -6)
 
-            scene_principal.add(gltf.scene);
+        scene_principal.add(gltf.scene);
 
-            const position = gltf.scene.position
-            const rotation = gltf.scene.rotation
-            let tl = new TimelineLite({
-                onStart: function(){ loadPage() },
-                onComplete: function() { completeAnimation(position, rotation) }
-            })
+        const position = gltf.scene.position
+        const rotation = gltf.scene.rotation
+        let tl = new TimelineLite({
+            onStart: function () { loadPage() },
+            onComplete: function () { completeAnimation(position, rotation) }
+        })
 
-            tl.to(position, { x: 2, duration: 3, ease: "power4.inOut" }, 0)
-                .to(rotation, { y: 5.3, duration: 3, ease: "power4.inOut" }, 0)
+        tl.to(position, { x: 2, duration: 3, ease: "power4.inOut" }, 0)
+            .to(rotation, { y: 5.3, duration: 3, ease: "power4.inOut" }, 0)
 
-            showAnimations(tl)
+        showAnimations(tl)
 
-        }, (xhr) => {
-            console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
-        },
+    }, (xhr) => {
+        console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+    },
         (error) => {
             console.log(error)
         })
@@ -223,7 +223,7 @@ const initCanvasPrincipal = () => {
     }
 }
 
-export default async() => {
+export default async () => {
     lenis = new Lenis()
     canvas_principal = document.querySelector('.canvas-principal')
     canvas_product = document.querySelector('.canvas-product')
@@ -243,8 +243,8 @@ export default async() => {
     })
 
     await validateSessionButton();
-    window.addEventListener('pageshow', async (e) =>{
-        if(e.persisted){
+    window.addEventListener('pageshow', async (e) => {
+        if (e.persisted) {
             await validateSessionButton();
         }
     })
@@ -253,10 +253,45 @@ export default async() => {
 
     animate()
     requestAnimationFrame(raf)
+
+    addNewVisit();
+}
+
+function addNewVisit() {
+    var date = new Date();
+
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
+    var day = date.getDate();
+
+    var formatedDay = year + '-' + month.toString().padStart(2, '0') + '-' + day.toString().padStart(2, '0');
+
+    API.executeConsult(formatedDay, 'visits_by_date').then(
+        function (value) {
+            if (value.length == 0) {
+                API.executeInsert(JSON.stringify({
+                    date: formatedDay,
+                    quantity: 1
+                }), 'visits')
+                    .then(function (value) { addNewVisit() }, function (error) { console.log(error) })
+            } else {
+                var visit = value[0];
+                var id = visit.id;
+
+                visit.quantity = parseInt(visit.quantity) + 1;
+                delete visit.id
+                API.executeUpdate(JSON.stringify(visit), id, 'visits')
+                    .then(function () { }, function (error) { console.log(error); })
+            }
+        },
+        function (error) {
+            console.log(error);
+        }
+    )
 }
 
 async function validateSessionButton() {
-    const response = await fetch('../validateSession',{
+    const response = await fetch('../validateSession', {
         method: 'GET'
     })
 
@@ -266,9 +301,9 @@ async function validateSessionButton() {
         return JSON.parse(res);
     })
 
-    if(data_response.sessionExpires){
+    if (data_response.sessionExpires) {
         url = '../login';
-    }else{
+    } else {
         url = data_response.url;
     }
 
@@ -288,28 +323,28 @@ function animate() {
     requestAnimationFrame(animate)
 }
 
-const loadData = async() =>{
+const loadData = async () => {
     await API.executeConsult(null, 'products')
-    .then(
-        async function(value){
-            await showProducts(value);
-        },
-        function(error){
-            notificationConfig.text = "Error en el servidor"
-            notificationConfig.background = "Red"
-            showMessagePopup(notificationConfig)
-        }
-    )
+        .then(
+            async function (value) {
+                await showProducts(value);
+            },
+            function (error) {
+                notificationConfig.text = "Error en el servidor"
+                notificationConfig.background = "Red"
+                showMessagePopup(notificationConfig)
+            }
+        )
 }
 
-const showProducts = async(value) =>{
+const showProducts = async (value) => {
     value.forEach(element => {
         var imageData;
-        if(parseInt(element.quantityImages) > 0){
+        if (parseInt(element.quantityImages) > 0) {
             const images = element.imagesURL;
             const arrayImages = images.split(',');
             imageData = arrayImages[0]
-        }else{
+        } else {
             imageData = ''
         }
 

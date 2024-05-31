@@ -98,9 +98,9 @@ const insertHeaders = async (router) => {
         tr.append(th);
     });
 
-    if (isEditable) {
-        const th = document.createElement('th')
-        th.textContent = 'OPERACIÓN'
+    if (isEditable || router == 'orders') {
+        const th = document.createElement('th');
+        th.textContent = 'OPERACIÓN';
         tr.append(th);
     }
 }
@@ -133,14 +133,213 @@ const insertData = async (data) => {
 
             row.append(buttons)
         }
+
+        if (router == 'orders') {
+            var buttons = document.createElement('td');
+
+            if (element['state'] == 'En proceso') { buttons.appendChild(getButtonsOrders(element.id)[0]) }
+
+            row.append(buttons)
+        } else if (router == "shipments") {
+            var buttons = document.createElement('td');
+
+            if (element['stateName'] == 'En transito') { buttons.appendChild(getButtonsShipment(element.id)[0]) }
+
+            row.append(buttons);
+        }
     });
 
     await loadTable()
 }
 
+const getButtonsOrders = (id) => {
+    const creteShipment = document.createElement('ion-icon');
+    creteShipment.setAttribute('name', 'send');
+
+    creteShipment.addEventListener('click', async () => {
+        await newShipment(id).then(
+            function (value) {
+                notificationConfig.background = 'green';
+                notificationConfig.text = 'Envio generado con exito';
+                showMessagePopup(notificationConfig)
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            },
+            function (error) {
+                notificationConfig.background = 'red';
+                notificationConfig.text = error.reason;
+                showMessagePopup(notificationConfig)
+            }
+        )
+    })
+
+    return [creteShipment]
+}
+
+const getButtonsShipment = (id) => {
+    const button = document.createElement('ion-icon');
+    button.setAttribute('name', 'bag-check');
+
+    button.addEventListener('click', () => {
+        completeShipment(id).then(
+            function (value) {
+                notificationConfig.background = 'green';
+                notificationConfig.text = 'Paquete entregado con exito';
+                showMessagePopup(notificationConfig)
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            },
+            function (error) {
+                notificationConfig.background = 'red';
+                notificationConfig.text = error.reason;
+                showMessagePopup(notificationConfig);
+            }
+        )
+    })
+
+    return [button]
+}
+
+const newShipment = async (id) => {
+    return new Promise(function (resolve, reject) {
+        API.executeConsult(id, 'orders').then(
+            function (value) {
+                const order = value[0];
+                API.executeConsult(order.id, 'orders_detail_by_order').then(
+                    function (value) {
+                        const details = value[0];
+
+                        API.executeConsult(order.city, 'companies_by_city').then(
+                            function (value) {
+                                if (value.length > 0) {
+                                    const company = value[0];
+
+                                    API.executeConsult(order.city, 'depot_by_product').then(
+                                        function (value) {
+                                            const depot = value[0];
+
+                                            var date = new Date();
+
+                                            var year = date.getFullYear();
+                                            var month = date.getMonth() + 1;
+                                            var day = date.getDate();
+
+                                            var formatedDay = year + '/' + month.toString().padStart(2, '0') + '/' + day.toString().padStart(2, '0');
+
+                                            var shipment = {
+                                                actualUbication: `{longitude: ${depot.longitude}, latitude: ${depot.latitude}}`,
+                                                originUbication: `{longitude: ${depot.longitude}, latitude: ${depot.latitude}}`,
+                                                shipmentUbication: `{longitude: ${order.longitude}, latitude: ${order.latitude}}`,
+                                                shipmentDate: formatedDay,
+                                                deliveryDate: null,
+                                                state: 1,
+                                                company: company.id,
+                                                orderid: order.id,
+                                                delivery: null
+                                            }
+
+                                            API.executeInsert(JSON.stringify(shipment), 'shipments').then(
+                                                function (value) {
+                                                    API.executeUpdate(JSON.stringify({ state: 2 }), order.id, 'orders').then(
+                                                        function (value) {
+                                                            resolve();
+                                                        },
+                                                        function (error) {
+                                                            reject({ reason: error.message })
+                                                        }
+                                                    )
+                                                },
+                                                function (error) {
+                                                    reject({ reason: error.message });
+                                                }
+                                            )
+                                            resolve()
+                                        },
+                                        function (error) {
+                                            reject({ reason: `No hay depositos disponibles para la ciudad de ${order.cityName}` })
+                                        }
+                                    )
+                                } else {
+                                    reject({ reason: `No hay compañias disponibles para la ciudad de ${order.cityName}` })
+                                }
+                            },
+                            function (error) {
+                                reject({ reason: error.message });
+                            }
+                        )
+                    },
+                    function (error) {
+                        reject({ reason: error.message });
+                    }
+                )
+            },
+            function (error) {
+                reject({ reason: error.message });
+            })
+    })
+}
+
+const completeShipment = async (id) => {
+    return new Promise(function (resolve, reject) {
+        API.executeConsult(id, 'shipments').then(
+            function (value) {
+                const shipment = value[0];
+
+                API.executeConsult(shipment.company, 'companies').then(
+                    function (value) {
+                        const company = value[0];
+
+                        API.executeConsult(shipment.order, 'orders').then(
+                            function (value) {
+                                const order = value[0];
+
+                                var earning = {
+                                    totalSale: order.totalPrice,
+                                    orderid: order.id,
+                                    totalEarnings: parseFloat(order.totalPrice) - (parseFloat(order.totalPrice) * company.shipingDiscount / 100),
+                                    company: company.id
+                                }
+
+                                API.executeUpdate(JSON.stringify({ state: 3 }), shipment.id, 'shipments').then(
+                                    function (value) {
+                                        API.executeInsert(JSON.stringify(earning), 'earnings').then(
+                                            function (value) {
+                                                resolve();
+                                            },
+                                            function (error) {
+                                                reject({ reason: error.message });
+                                            }
+                                        )
+                                    },
+                                    function (error) {
+                                        reject({ reason: error.message });
+                                    }
+                                )
+
+                            },
+                            function (error) {
+                                reject({ reason: error.message })
+                            }
+                        )
+                    },
+                    function (error) {
+                        reject({ reason: error.message })
+                    }
+                )
+            },
+            function (error) {
+                reject({ reason: error.message })
+            }
+        )
+    })
+}
+
 const insertFields = async (route) => {
     const fields = formFields[route] || null;
     var haveMap = false;
+    var mapFunction = '';
 
     var inner = ""
     if (fields == null) {
@@ -185,19 +384,27 @@ const insertFields = async (route) => {
                 ${optionsForm}
             </select>
             </label>`;
-        } else if (type == 'map') {
+        } else if (type == 'map_points') {
             haveMap = true;
+            mapFunction = 'map_points';
             inner += `<label>
             Mapa
             </label>
             <div class="field map" name="points"></div>`
+        } else if (type == 'map_point') {
+            haveMap = true;
+            mapFunction = 'map_point';
+            inner += `<label>
+            Mapa
+            </label>
+            <div class="field map" name="point"></div>`
         }
     }));
 
     inner += '<input id="form-entity-submit" name="submit" type="submit" style="display:none;">';
 
     formEntity.innerHTML = inner
-    if (haveMap) await initMap(formEntity);
+    if (haveMap) await initMap(formEntity, mapFunction);
     setListenersFields();
 }
 
@@ -209,9 +416,10 @@ var mapConfig = {
 
 var map;
 var pointsGeographic = null;
-var draw;
+var draw = null;
+var marker = null
 
-const initMap = async (form) => {
+const initMap = async (form, fun) => {
     maptilersdk.config.apiKey = 'cILWEoKejn0Dv5sjODMS';
     const mapDiv = form.querySelector('.map');
 
@@ -221,30 +429,52 @@ const initMap = async (form) => {
         center: [mapConfig.longitude, mapConfig.latitude], // starting position [lng, lat]
         zoom: mapConfig.zoom, // starting zoom
     });
-    
-    draw = new MapboxDraw({
-        displayControlsDefault: false,
-        controls: {
-            polygon: true,
-            trash: true
-        }
-    });
-    map.addControl(draw);
 
-    const drawControls = document.querySelectorAll(".mapboxgl-ctrl-group.mapboxgl-ctrl");
-    drawControls.forEach((elem) => {
-        elem.classList.add('maplibregl-ctrl', 'maplibregl-ctrl-group');
-    });
+    switch (fun) {
+        case 'map_points':
+            draw = new MapboxDraw({
+                displayControlsDefault: false,
+                controls: {
+                    polygon: true,
+                    trash: true
+                }
+            });
+            map.addControl(draw);
 
-    map.on('draw.create', updateArea);
-    map.on('draw.delete', updateArea);
-    map.on('draw.update', updateArea);
+            const drawControls = document.querySelectorAll(".mapboxgl-ctrl-group.mapboxgl-ctrl");
+            drawControls.forEach((elem) => {
+                elem.classList.add('maplibregl-ctrl', 'maplibregl-ctrl-group');
+            });
 
-    function updateArea(e) {
-        var data = draw.getAll();
-        pointsGeographic = data.features[0].geometry.coordinates[0];
-        form.querySelector(`.points`).value = JSON.stringify(pointsGeographic);
+            map.on('draw.create', updateArea);
+            map.on('draw.delete', updateArea);
+            map.on('draw.update', updateArea);
+
+            function updateArea(e) {
+                var data = draw.getAll();
+                pointsGeographic = data.features[0].geometry.coordinates[0];
+                form.querySelector(`.points`).value = JSON.stringify(pointsGeographic);
+            }
+            break;
+        case 'map_point':
+            marker = new maptilersdk.Marker({
+                draggable: true,
+                color: "#FFFFFF"
+            })
+                .setLngLat([-73.5723, 3.3984486])
+                .addTo(map)
+
+            marker.on('dragend', function (e) {
+                const lngLat = marker.getLngLat();
+                formEntity.querySelector('.latitude').value = lngLat.lat;
+                formEntity.querySelector('.longitude').value = lngLat.lng;
+            });
+            break;
     }
+}
+
+const drawPosition = (point) => {
+    marker.setLngLat([point.longitude, point.latitude]);
 }
 
 var polygons;
@@ -283,11 +513,14 @@ const drawPolygon = (points) => {
 }
 
 const emptyMap = () => {
-    draw.deleteAll();
-    if(polygons != null){
-        map.removeLayer('polygons')
-        map.removeSource('source');
-        polygons = null;
+
+    if (draw != null) {
+        draw.deleteAll();
+        if (polygons != null) {
+            map.removeLayer('polygons')
+            map.removeSource('source');
+            polygons = null;
+        }
     }
 }
 
@@ -426,16 +659,32 @@ const insertDataFormUpdate = (id) => {
                                     }
                                 });
                             }
-                        } else if (subClas == "map") {
+                        } else if (subClas == "map" && name == 'points') {
                             if (data['points'] != null && data['points'] != "") {
                                 const points = JSON.parse(data['points']);
                                 drawPolygon(points);
                             } else {
                                 emptyMap();
                             }
-                        } else {
+                        }
+                        else {
                             element.value = data[key];
                         }
+                    }
+                }
+                if (subClas == "map" && name == 'point') {
+                    if ((data['latitude'] != null && data['latitude'] != "") &&
+                        data['longitude'] != null && data['longitude'] != "") {
+                        const point = {
+                            longitude: data['longitude'],
+                            latitude: data['latitude']
+                        }
+                        drawPosition(point);
+                    } else {
+                        drawPosition({
+                            longitude: 3.3984486,
+                            latitude: -73.5723
+                        });
                     }
                 }
             });
@@ -566,7 +815,7 @@ const emptyFields = () => {
         element.value = "0"
     });
 
-    if(draw != null){
+    if (draw != null) {
         emptyMap();
     }
 }
@@ -593,7 +842,11 @@ const getOptionsSelect = async (route) => {
         const id = element.id;
         const name = element.name || null;
 
-        inner += `<option value="${id}">${name}</option>`
+        if (route == 'orders') {
+            inner += `<option value="${id}">${id}. ${element.userName}</option>`
+        } else {
+            inner += `<option value="${id}">${name}</option>`
+        }
     });
 
     return inner;

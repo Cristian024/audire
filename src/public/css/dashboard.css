@@ -374,7 +374,7 @@ body {
   text-align: center;
 }
 
-.status.delivered {
+.status.entregado {
   padding: 2px 4px;
   background: #478402;
   color: var(--white);
@@ -383,7 +383,7 @@ body {
   font-weight: 500;
 }
 
-.status.pending {
+.status.en_proceso {
   padding: 2px 4px;
   background: #e9b10a;
   color: var(--white);
@@ -401,7 +401,7 @@ body {
   font-weight: 500;
 }
 
-.status.inProgress {
+.status.enviado {
   padding: 2px 4px;
   background: #1795ce;
   color: var(--white);

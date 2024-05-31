@@ -60,11 +60,12 @@ const render = (res, partial, req) => {
     const loggedin = req.session.loggedin;
     const role = req.session.role;
 
-    if(loggedin && role === 205){
-        res.render('dashboard.html', { pagina: 'DASHBOARD', partial: partial });
+    res.render('dashboard.html', { pagina: 'DASHBOARD', partial: partial });
+    /*if(loggedin && role === 205){
+        res.render('dashboard.html', { pagina: 'DASHBOARD', partial: partial });        
     }else{
         res.redirect('../');
-    }
+    }*/
 }
 
 module.exports = router;

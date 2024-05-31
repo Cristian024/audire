@@ -1,7 +1,5 @@
 import * as ROUTER from '../script.js';
 import * as HOME from './home.js';
-import * as API from '../dependencies/apiMethods.js'
-import * as FIREBASE from '../dependencies/firebase.js'
 import * as TABLES from './dashboardTables.js'
 
 
@@ -92,6 +90,7 @@ const functionsDashboard = () => {
             })
 
             if(data_response.sessionExpires){
+                localStorage.clear();
                 window.location = '../'
             }
         }
@@ -104,6 +103,7 @@ const routePartials = () => {
     if (section == 'home') {
         table.remove();
         operations.remove();
+        HOME.init();
     } else {
         cardBox.remove();
         details.remove();

@@ -14,7 +14,7 @@ export const executeConsult = async (id, route) => {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json; charset=utf-8',
-                }
+                },
             })
 
             data = response.text()
@@ -28,6 +28,7 @@ export const executeConsult = async (id, route) => {
 
             resolve(data_json);
         } catch (error) {
+            console.log(error);
             reject(exceptionCode500)
         }
     })
@@ -142,10 +143,10 @@ export const consultLogin = async (data) => {
 
             switch (data_response.status) {
                 case 204:
-                    resolve({role: data_response.status, userId: data_response.userId});
+                    resolve({ role: data_response.status, userId: data_response.userId });
                     break;
                 case 205:
-                    resolve({role: data_response.status, userId: data_response.userId});
+                    resolve({ role: data_response.status, userId: data_response.userId });
                     break;
                 case 202:
                     reject({ message: 'El usuario no existe' });

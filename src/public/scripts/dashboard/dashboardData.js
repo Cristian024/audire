@@ -24,7 +24,8 @@ export const headers = {
         'CANTIDAD ALMACENADA',
         'ID DEPOSITO',
         'NOMBRE DEPOSITO',
-        'CIUDAD PEPOSITO',
+        'ID CIUDAD DEPOSITO',
+        'CIUDAD DEPOSITO',
         'ID PRODUCTO',
         'NOMBRE PRODUCTO'
     ],
@@ -50,6 +51,7 @@ export const headers = {
         'DIRECCION',
         'LATITUD',
         'LONGITUD',
+        'ID CIUDAD',
         'CIUDAD',
         'METODO DE PAGO',
         'ESTADO',
@@ -117,8 +119,7 @@ export const headers = {
         'COMPAÑIA',
         'CIUDAD COMPAÑIA',
         'ID PEDIDO',
-        'ID REPARTIDOR',
-        'REPARTIDOR'
+        'OPERACIÓN'
     ],
     earnings: [
         'ID',
@@ -200,6 +201,10 @@ export const formFields = {
             'label': 'Nombre',
             'type': 'text',
             'name': 'name'
+        },
+        {
+            'label': 'Mapa',
+            'type': 'map_point',
         },
         {
             'label': 'Dirección',
@@ -339,7 +344,7 @@ export const formFields = {
         },
         {
             'label': 'Mapa',
-            'type': 'map',
+            'type': 'map_points',
         },
         {
             'label': 'Puntos geograficos',
@@ -372,5 +377,5 @@ export const editable = [
     'depot',
     'users',
     'companies',
-    'cities'
+    'cities',
 ]
